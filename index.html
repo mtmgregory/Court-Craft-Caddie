@@ -43,6 +43,7 @@
 
         h1 { color: var(--primary-green); text-align: center; margin-bottom: 10px; }
         h3 { color: var(--primary-green); margin-top: 0; }
+        h4 { color: var(--primary-green); margin-top: 15px; margin-bottom: 10px; }
 
         .input-group {
             margin-bottom: 15px;
@@ -57,6 +58,12 @@
         .input-row-three {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .input-row-four {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
 
@@ -128,6 +135,12 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 10px;
+        }
+
+        .button-group-three {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
         }
 
         .secondary-btn { background-color: var(--secondary); font-size: 14px; padding: 10px; }
@@ -232,14 +245,14 @@
             margin-bottom: 20px;
         }
 
-        .round-list {
+        .round-list, .course-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
             margin-top: 10px;
         }
 
-        .round-item {
+        .round-item, .course-item {
             padding: 12px;
             background: var(--light-bg);
             border-radius: 6px;
@@ -250,8 +263,8 @@
             align-items: center;
         }
 
-        .round-item:hover { background: #e9ecef; }
-        .round-item.active { background: var(--secondary); color: white; }
+        .round-item:hover, .course-item:hover { background: #e9ecef; }
+        .round-item.active, .course-item.active { background: var(--secondary); color: white; }
 
         .modal {
             display: none;
@@ -453,30 +466,6 @@
             pointer-events: none;
         }
 
-        .scorecard-table {
-            width: 100%;
-            font-size: 12px;
-            border-collapse: collapse;
-        }
-
-        .scorecard-table th {
-            background: var(--primary-green);
-            color: white;
-            padding: 8px 4px;
-            text-align: center;
-        }
-
-        .scorecard-table td {
-            padding: 8px 4px;
-            text-align: center;
-            border: 1px solid #eee;
-        }
-
-        .scorecard-table .hole-number {
-            font-weight: bold;
-            background: var(--light-bg);
-        }
-
         .course-info {
             background: var(--light-bg);
             padding: 15px;
@@ -498,6 +487,51 @@
         .course-info-value {
             font-weight: bold;
             color: var(--primary-green);
+        }
+
+        .hole-input-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .hole-input-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hole-input-item label {
+            font-size: 11px;
+            margin-bottom: 3px;
+            color: #666;
+        }
+
+        .hole-input-item input {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .course-preset-badge {
+            display: inline-block;
+            background: var(--primary-green);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .course-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -537,6 +571,10 @@
             <strong id="currentRoundName">Current Round: Today's Round</strong>
         </div>
     </div>
+
+    <button class="secondary-btn" onclick="app.ui.showCoursePresetsModal()" style="margin-top: 10px; width: 100%;">
+    🏌️ Course Presets & Setup
+    </button>
 
     <!-- Hole Navigation -->
     <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-top: 15px;">
@@ -658,8 +696,7 @@
     <button class="warning-btn" onclick="app.shots.undoLast()" style="margin-top: 10px;">↶ Undo Last Shot</button>
 </div>
 
-<!-- Continue in Part 2 -->
- <!-- Tabs -->
+<!-- Tabs -->
 <div class="container">
     <div class="tabs">
         <button class="tab active" onclick="app.ui.switchTab('shots', event)">Current Hole</button>
@@ -716,59 +753,202 @@
     </div>
 </div>
 
-<!-- Course Setup Modal -->
-<div id="courseModal" class="modal">
+<!-- Course Presets Modal -->
+<div id="coursePresetsModal" class="modal">
     <div class="modal-content">
-        <h3>Course Setup</h3>
+        <div class="section-header">
+            <h3>Course Presets</h3>
+            <button class="secondary-btn" onclick="app.coursePresets.showCreateModal()" style="width: auto; padding: 8px 15px; font-size: 14px;">➕ New Course</button>
+        </div>
+        <div class="course-list" id="coursePresetsList"></div>
+        <button class="secondary-btn" onclick="app.ui.closeCoursePresetsModal()" style="margin-top: 15px;">Close</button>
+    </div>
+</div>
+
+<!-- Create/Edit Course Preset Modal -->
+<div id="createCourseModal" class="modal">
+    <div class="modal-content">
+        <h3 id="createCourseTitle">Create Course Preset</h3>
+        
         <div class="input-group">
-            <label>Course Name</label>
-            <input type="text" id="courseName" placeholder="Pine Valley Golf Club">
+            <label class="label-required">Course Name</label>
+            <input type="text" id="newCourseName" placeholder="e.g. Pebble Beach">
+            <div class="error-message" id="error-newCourseName"></div>
         </div>
+        
         <div class="input-group">
-            <label>Tees Played</label>
-            <select id="tees">
-                <option value="Black">Black (Championship)</option>
-                <option value="Blue">Blue</option>
-                <option value="White" selected>White</option>
-                <option value="Red">Red</option>
-            </select>
+            <label>Location (optional)</label>
+            <input type="text" id="newCourseLocation" placeholder="e.g. Monterey, CA">
         </div>
-        <h4>Par for Each Hole</h4>
-        <div class="input-row-three">
-            <input type="number" id="par1" value="4" min="3" max="6" placeholder="1">
-            <input type="number" id="par2" value="4" min="3" max="6" placeholder="2">
-            <input type="number" id="par3" value="3" min="3" max="6" placeholder="3">
+        
+        <h4>Front Nine</h4>
+        <div class="hole-input-grid">
+            <div class="hole-input-item">
+                <label>Hole 1</label>
+                <input type="number" id="newPar1" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards1" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 2</label>
+                <input type="number" id="newPar2" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards2" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 3</label>
+                <input type="number" id="newPar3" placeholder="Par" min="3" max="6" value="3">
+                <input type="number" id="newYards3" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 4</label>
+                <input type="number" id="newPar4" placeholder="Par" min="3" max="6" value="5">
+                <input type="number" id="newYards4" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 5</label>
+                <input type="number" id="newPar5" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards5" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 6</label>
+                <input type="number" id="newPar6" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards6" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 7</label>
+                <input type="number" id="newPar7" placeholder="Par" min="3" max="6" value="3">
+                <input type="number" id="newYards7" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 8</label>
+                <input type="number" id="newPar8" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards8" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 9</label>
+                <input type="number" id="newPar9" placeholder="Par" min="3" max="6" value="5">
+                <input type="number" id="newYards9" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
         </div>
-        <div class="input-row-three">
-            <input type="number" id="par4" value="5" min="3" max="6" placeholder="4">
-            <input type="number" id="par5" value="4" min="3" max="6" placeholder="5">
-            <input type="number" id="par6" value="4" min="3" max="6" placeholder="6">
+        
+        <h4>Back Nine</h4>
+        <div class="hole-input-grid">
+            <div class="hole-input-item">
+                <label>Hole 10</label>
+                <input type="number" id="newPar10" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards10" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 11</label>
+                <input type="number" id="newPar11" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards11" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 12</label>
+                <input type="number" id="newPar12" placeholder="Par" min="3" max="6" value="3">
+                <input type="number" id="newYards12" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 13</label>
+                <input type="number" id="newPar13" placeholder="Par" min="3" max="6" value="5">
+                <input type="number" id="newYards13" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 14</label>
+                <input type="number" id="newPar14" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards14" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 15</label>
+                <input type="number" id="newPar15" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards15" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 16</label>
+                <input type="number" id="newPar16" placeholder="Par" min="3" max="6" value="3">
+                <input type="number" id="newYards16" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 17</label>
+                <input type="number" id="newPar17" placeholder="Par" min="3" max="6" value="4">
+                <input type="number" id="newYards17" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
+            <div class="hole-input-item">
+                <label>Hole 18</label>
+                <input type="number" id="newPar18" placeholder="Par" min="3" max="6" value="5">
+                <input type="number" id="newYards18" placeholder="Yards" min="50" max="700" style="margin-top: 4px;">
+            </div>
         </div>
-        <div class="input-row-three">
-            <input type="number" id="par7" value="3" min="3" max="6" placeholder="7">
-            <input type="number" id="par8" value="4" min="3" max="6" placeholder="8">
-            <input type="number" id="par9" value="5" min="3" max="6" placeholder="9">
+        
+        <div class="course-info" style="margin-top: 15px;">
+            <div class="course-info-row">
+                <span class="course-info-label">Total Par:</span>
+                <span class="course-info-value" id="newCourseTotalPar">72</span>
+            </div>
+            <div class="course-info-row">
+                <span class="course-info-label">Total Yardage:</span>
+                <span class="course-info-value" id="newCourseTotalYards">-</span>
+            </div>
         </div>
-        <h4 style="margin-top: 15px;">Back Nine</h4>
-        <div class="input-row-three">
-            <input type="number" id="par10" value="4" min="3" max="6" placeholder="10">
-            <input type="number" id="par11" value="4" min="3" max="6" placeholder="11">
-            <input type="number" id="par12" value="3" min="3" max="6" placeholder="12">
-        </div>
-        <div class="input-row-three">
-            <input type="number" id="par13" value="5" min="3" max="6" placeholder="13">
-            <input type="number" id="par14" value="4" min="3" max="6" placeholder="14">
-            <input type="number" id="par15" value="4" min="3" max="6" placeholder="15">
-        </div>
-        <div class="input-row-three">
-            <input type="number" id="par16" value="3" min="3" max="6" placeholder="16">
-            <input type="number" id="par17" value="4" min="3" max="6" placeholder="17">
-            <input type="number" id="par18" value="5" min="3" max="6" placeholder="18">
-        </div>
+        
         <div class="button-group" style="margin-top: 15px;">
-            <button class="secondary-btn" onclick="app.course.save()">Save Course</button>
-            <button class="danger-btn" onclick="app.ui.closeCourseModal()">Cancel</button>
+            <button class="secondary-btn" onclick="app.coursePresets.save()">💾 Save Course</button>
+            <button class="danger-btn" onclick="app.ui.closeCreateCourseModal()">Cancel</button>
         </div>
+    </div>
+</div>
+
+<!-- Quick Course Setup Modal (for rounds) -->
+<div id="quickCourseModal" class="modal">
+    <div class="modal-content">
+        <h3>Select or Create Course</h3>
+        
+        <div class="button-group-three" style="margin-bottom: 15px;">
+            <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('presets')">📚 Presets</button>
+            <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('quick')">⚡ Quick Setup</button>
+            <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('custom')">🎨 Custom</button>
+        </div>
+        
+        <!-- Presets Tab -->
+        <div id="quickCoursePresets" class="tab-content active">
+            <div class="course-list" id="quickCoursePresetsList"></div>
+        </div>
+        
+        <!-- Quick Setup Tab -->
+        <div id="quickCourseQuick" class="tab-content">
+            <div class="input-group">
+                <label>Course Name</label>
+                <input type="text" id="quickCourseName" placeholder="e.g. Local Golf Club">
+            </div>
+            <div class="input-group">
+                <label>Tees Played</label>
+                <select id="quickTees">
+                    <option value="Black">Black (Championship)</option>
+                    <option value="Blue">Blue</option>
+                    <option value="White" selected>White</option>
+                    <option value="Red">Red</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Course Par</label>
+                <select id="quickPar">
+                    <option value="70">Par 70</option>
+                    <option value="71">Par 71</option>
+                    <option value="72" selected>Par 72</option>
+                    <option value="73">Par 73</option>
+                </select>
+            </div>
+            <button class="secondary-btn" onclick="app.coursePresets.applyQuickSetup()">Apply Quick Setup</button>
+        </div>
+        
+        <!-- Custom Tab -->
+        <div id="quickCourseCustom" class="tab-content">
+            <p style="text-align: center; color: #666; font-size: 14px;">
+                For detailed hole-by-hole setup, use the Course Presets feature.
+            </p>
+            <button class="secondary-btn" onclick="app.coursePresets.showCreateModal(); app.ui.closeQuickCourseModal();">Create Full Course Preset</button>
+        </div>
+        
+        <button class="danger-btn" onclick="app.ui.closeQuickCourseModal()" style="margin-top: 15px;">Cancel</button>
     </div>
 </div>
 
@@ -851,6 +1031,7 @@
 
 </body>
 </html>
+
 <script type="module">
 // ============================================================================
 // FIREBASE SETUP - MUST BE FIRST
@@ -905,20 +1086,22 @@ const IDGenerator = {
 const State = {
     rounds: [],
     shots: [],
-    courses: [],
+    coursePresets: [],
     currentRoundId: null,
     currentHole: 1,
     editingShot: null,
+    editingCourse: null,
     userId: null,
     
     // Default par 72 course
     defaultPars: [4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5],
+    defaultYards: [400,380,175,520,410,395,165,430,550,385,415,190,535,400,410,180,425,560],
     
     load() {
         try {
             this.rounds = JSON.parse(localStorage.getItem('golfRounds') || '[]');
             this.shots = JSON.parse(localStorage.getItem('golfShots') || '[]');
-            this.courses = JSON.parse(localStorage.getItem('golfCourses') || '[]');
+            this.coursePresets = JSON.parse(localStorage.getItem('golfCoursePresets') || '[]');
             this.currentRoundId = localStorage.getItem('currentRoundId');
             
             if (this.rounds.length === 0) {
@@ -927,8 +1110,10 @@ const State = {
                     name: "Today's Round",
                     date: new Date().toISOString(),
                     courseName: "Default Course",
+                    courseId: null,
                     tees: "White",
                     pars: this.defaultPars,
+                    yards: this.defaultYards,
                     completed: false
                 };
                 this.rounds.push(defaultRound);
@@ -945,6 +1130,7 @@ const State = {
             console.log('✅ State loaded:', {
                 rounds: this.rounds.length,
                 shots: this.shots.length,
+                coursePresets: this.coursePresets.length,
                 currentRound: this.currentRoundId
             });
         } catch (error) {
@@ -957,7 +1143,7 @@ const State = {
         try {
             localStorage.setItem('golfRounds', JSON.stringify(this.rounds));
             localStorage.setItem('golfShots', JSON.stringify(this.shots));
-            localStorage.setItem('golfCourses', JSON.stringify(this.courses));
+            localStorage.setItem('golfCoursePresets', JSON.stringify(this.coursePresets));
             localStorage.setItem('currentRoundId', this.currentRoundId);
             localStorage.setItem(`currentHole_${this.currentRoundId}`, this.currentHole.toString());
         } catch (error) {
@@ -972,13 +1158,15 @@ const State = {
             name: "Today's Round",
             date: new Date().toISOString(),
             courseName: "Default Course",
+            courseId: null,
             tees: "White",
             pars: this.defaultPars,
+            yards: this.defaultYards,
             completed: false
         };
         this.rounds = [defaultRound];
         this.shots = [];
-        this.courses = [];
+        this.coursePresets = [];
         this.currentRoundId = defaultRound.id;
         this.currentHole = 1;
         this.save();
@@ -1001,6 +1189,11 @@ const State = {
     getPar(hole) {
         const round = this.getCurrentRound();
         return round && round.pars ? round.pars[hole - 1] : 4;
+    },
+    
+    getYards(hole) {
+        const round = this.getCurrentRound();
+        return round && round.yards ? round.yards[hole - 1] : null;
     },
     
     addRound(round) {
@@ -1048,6 +1241,31 @@ const State = {
         this.shots = this.shots.filter(s => s.roundId !== this.currentRoundId);
         this.currentHole = 1;
         this.save();
+    },
+    
+    // Course Preset methods
+    addCoursePreset(course) {
+        this.coursePresets.push(course);
+        this.save();
+    },
+    
+    updateCoursePreset(courseId, updates) {
+        const index = this.coursePresets.findIndex(c => c.id === courseId);
+        if (index !== -1) {
+            this.coursePresets[index] = { ...this.coursePresets[index], ...updates };
+            this.save();
+            return true;
+        }
+        return false;
+    },
+    
+    deleteCoursePreset(courseId) {
+        this.coursePresets = this.coursePresets.filter(c => c.id !== courseId);
+        this.save();
+    },
+    
+    getCoursePresetById(courseId) {
+        return this.coursePresets.find(c => c.id === courseId);
     }
 };
 
@@ -1062,21 +1280,16 @@ const FirebaseSync = {
         if (!isFirebaseEnabled) return;
         
         try {
-            // Sign in anonymously
             await signInAnonymously(auth);
             console.log('✅ Anonymous authentication successful');
             
-            // Wait for auth state
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     State.userId = user.uid;
                     currentUser = user;
                     this.updateSyncStatus('synced', '✅ Connected to cloud');
                     
-                    // Load user data from Firestore
                     await this.loadUserData();
-                    
-                    // Process any pending operations
                     await this.processPending();
                 } else {
                     this.updateSyncStatus('offline', '⚠️ Offline mode');
@@ -1103,7 +1316,6 @@ const FirebaseSync = {
         try {
             this.updateSyncStatus('syncing', '🔄 Loading your data...');
             
-            // Load rounds
             const roundsQuery = query(
                 collection(db, 'rounds'),
                 where('userId', '==', currentUser.uid)
@@ -1114,7 +1326,6 @@ const FirebaseSync = {
                 ...doc.data()
             }));
             
-            // Load shots
             const shotsQuery = query(
                 collection(db, 'shots'),
                 where('userId', '==', currentUser.uid)
@@ -1125,7 +1336,6 @@ const FirebaseSync = {
                 ...doc.data()
             }));
             
-            // Merge with local data (prefer Firebase data)
             if (firebaseRounds.length > 0) {
                 State.rounds = firebaseRounds;
             }
@@ -1136,7 +1346,6 @@ const FirebaseSync = {
             State.save();
             this.updateSyncStatus('synced', '✅ Data synced');
             
-            // Refresh UI
             UI.updateCurrentRoundDisplay();
             UI.updateHoleDisplay();
             UI.updateQuickStats();
@@ -1257,7 +1466,6 @@ const FirebaseSync = {
     }
 };
 
-// Listen for online/offline events
 window.addEventListener('online', () => {
     FirebaseSync.updateSyncStatus('syncing', '🔄 Reconnecting...');
     FirebaseSync.processPending();
@@ -1267,7 +1475,6 @@ window.addEventListener('offline', () => {
     FirebaseSync.updateSyncStatus('offline', '⚠️ Offline mode');
 });
 
-// Continue in Part 4 with Managers...
 // ============================================================================
 // INPUT VALIDATION
 // ============================================================================
@@ -1301,6 +1508,19 @@ const Validator = {
         
         if (!shot.lie) {
             errors.lie = 'Lie type is required';
+        }
+        
+        return {
+            isValid: Object.keys(errors).length === 0,
+            errors
+        };
+    },
+    
+    validateCourse(course) {
+        const errors = {};
+        
+        if (!course.name || course.name.trim() === '') {
+            errors.newCourseName = 'Course name is required';
         }
         
         return {
@@ -1391,13 +1611,37 @@ const UI = {
         document.getElementById('roundModal').classList.remove('show');
     },
     
-    showCourseModal() {
-        CourseManager.loadCurrentCourse();
-        document.getElementById('courseModal').classList.add('show');
+    showCoursePresetsModal() {
+        CoursePresetManager.renderList();
+        document.getElementById('coursePresetsModal').classList.add('show');
     },
     
-    closeCourseModal() {
-        document.getElementById('courseModal').classList.remove('show');
+    closeCoursePresetsModal() {
+        document.getElementById('coursePresetsModal').classList.remove('show');
+    },
+    
+    showCreateCourseModal() {
+        document.getElementById('createCourseModal').classList.add('show');
+    },
+    
+    closeCreateCourseModal() {
+        document.getElementById('createCourseModal').classList.remove('show');
+        State.editingCourse = null;
+        Validator.clearErrors();
+    },
+    
+    showQuickCourseModal() {
+        CoursePresetManager.renderQuickList();
+        document.getElementById('quickCourseModal').classList.add('show');
+    },
+    
+    closeQuickCourseModal() {
+        document.getElementById('quickCourseModal').classList.remove('show');
+    },
+    
+    showQuickCourseTab(tabName) {
+        document.querySelectorAll('#quickCourseModal .tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('quickCourse' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
     },
     
     closeEditModal() {
@@ -1425,34 +1669,35 @@ const UI = {
     updateHoleDisplay() {
         const currentHole = State.currentHole;
         const par = State.getPar(currentHole);
+        const yards = State.getYards(currentHole);
         const holeShots = State.getShotsForHole(State.currentRoundId, currentHole);
         const shotCount = holeShots.length;
         
         document.getElementById('hole').value = currentHole;
         document.getElementById('currentHoleDisplay').textContent = `Hole ${currentHole}`;
-        document.getElementById('holeShotsCount').textContent = 
-            `${shotCount} shot${shotCount !== 1 ? 's' : ''} • Par ${par}`;
         
-        // Update hole stats
+        let holeInfo = `${shotCount} shot${shotCount !== 1 ? 's' : ''} • Par ${par}`;
+        if (yards) {
+            holeInfo += ` • ${yards} yds`;
+        }
+        document.getElementById('holeShotsCount').textContent = holeInfo;
+        
         const score = shotCount > 0 ? shotCount : '-';
         const putts = holeShots.filter(s => s.isPutt).length;
-        const scoreToPar = shotCount > 0 ? (shotCount - par > 0 ? `+${shotCount - par}` : shotCount - par) : '-';
         
         document.getElementById('holeScore').textContent = score;
         document.getElementById('holePutts').textContent = putts || '-';
         
-        // FIR (Fairway in Regulation) - only for par 4/5
         const fir = this.calculateFIR(currentHole, holeShots);
         document.getElementById('holeFIR').textContent = fir;
         
-        // GIR (Green in Regulation)
         const gir = this.calculateGIR(currentHole, holeShots, par);
         document.getElementById('holeGIR').textContent = gir;
     },
     
     calculateFIR(hole, shots) {
         const par = State.getPar(hole);
-        if (par < 4) return 'N/A'; // Only for par 4/5
+        if (par < 4) return 'N/A';
         
         const teeShot = shots.find(s => s.lie === 'Tee');
         if (!teeShot) return '-';
@@ -1502,7 +1747,6 @@ const UI = {
         const putts = shots.filter(s => s.isPutt).length;
         document.getElementById('quickPutts').textContent = putts;
         
-        // Calculate fairways hit
         let fairwaysHit = 0;
         let fairwaysTotal = 0;
         holesPlayed.forEach(hole => {
@@ -1556,14 +1800,12 @@ const ShotManager = {
                 State.addShot(shot);
                 await FirebaseSync.syncShot(shot);
                 
-                // Clear form
                 document.getElementById('distance').value = '';
                 document.getElementById('distanceRemaining').value = '';
                 document.getElementById('notes').value = '';
                 document.getElementById('isPutt').checked = false;
                 document.getElementById('isPenalty').checked = false;
                 
-                // Smart club suggestion
                 this.suggestNextClub(shot);
                 
                 UI.updateHoleDisplay();
@@ -1577,12 +1819,9 @@ const ShotManager = {
     },
     
     suggestNextClub(lastShot) {
-        // Auto-select putter if on green
         if (lastShot.lie === 'Green') {
             document.getElementById('club').value = 'Putter';
-        }
-        // Keep same club for bunker shots
-        else if (lastShot.lie === 'Bunker') {
+        } else if (lastShot.lie === 'Bunker') {
             document.getElementById('club').value = lastShot.club;
         }
     },
@@ -1596,7 +1835,7 @@ const ShotManager = {
             return;
         }
         
-        shotBody.innerHTML = shots.map((shot, index) => `
+        shotBody.innerHTML = shots.map((shot) => `
             <tr>
                 <td><strong>#${shot.shotNumber}</strong></td>
                 <td>${shot.club}${shot.isPutt ? ' 🏌️' : ''}${shot.isPenalty ? ' ⚠️' : ''}</td>
@@ -1771,7 +2010,6 @@ const HoleManager = {
     }
 };
 
-// Continue in Part 5 with Round, Course, Stats, Export managers...
 // ============================================================================
 // ROUND MANAGER
 // ============================================================================
@@ -1786,14 +2024,11 @@ const RoundManager = {
                 name: name.trim(),
                 date: new Date().toISOString(),
                 courseName: "Default Course",
+                courseId: null,
                 tees: "White",
                 pars: State.defaultPars,
-                completed: false,
-                weather: {
-                    temp: null,
-                    wind: null,
-                    condition: null
-                }
+                yards: State.defaultYards,
+                completed: false
             };
             
             State.addRound(round);
@@ -1809,9 +2044,8 @@ const RoundManager = {
             
             UI.showToast('New round created!', 'success');
             
-            // Prompt for course setup
-            if (confirm('Would you like to set up the course details?')) {
-                UI.showCourseModal();
+            if (confirm('Would you like to select a course?')) {
+                UI.showQuickCourseModal();
             }
         }, 'Failed to create round');
     },
@@ -1903,7 +2137,6 @@ const RoundManager = {
         if (!confirm(`Clear all ${shotCount} shots from this round?`)) return;
         
         await ErrorHandler.wrap(async () => {
-            // Delete shots from Firebase
             const shots = State.getShotsForRound(State.currentRoundId);
             for (const shot of shots) {
                 await FirebaseSync.deleteShotFromFirebase(shot.id);
@@ -1921,46 +2154,233 @@ const RoundManager = {
 };
 
 // ============================================================================
-// COURSE MANAGER
+// COURSE PRESET MANAGER
 // ============================================================================
-const CourseManager = {
-    loadCurrentCourse() {
-        const round = State.getCurrentRound();
-        if (!round) return;
+const CoursePresetManager = {
+    showCreateModal() {
+        State.editingCourse = null;
+        document.getElementById('createCourseTitle').textContent = 'Create Course Preset';
         
-        document.getElementById('courseName').value = round.courseName || '';
-        document.getElementById('tees').value = round.tees || 'White';
+        document.getElementById('newCourseName').value = '';
+        document.getElementById('newCourseLocation').value = '';
         
-        const pars = round.pars || State.defaultPars;
         for (let i = 1; i <= 18; i++) {
-            document.getElementById(`par${i}`).value = pars[i - 1];
+            document.getElementById(`newPar${i}`).value = State.defaultPars[i - 1];
+            document.getElementById(`newYards${i}`).value = State.defaultYards[i - 1];
         }
+        
+        this.updateCourseTotals();
+        UI.showCreateCourseModal();
+        UI.closeCoursePresetsModal();
     },
     
     async save() {
-        const round = State.getCurrentRound();
-        if (!round) return;
+        const courseName = document.getElementById('newCourseName').value.trim();
         
-        round.courseName = document.getElementById('courseName').value || 'Default Course';
-        round.tees = document.getElementById('tees').value;
+        await ErrorHandler.validateAndExecute(
+            () => Validator.validateCourse({ name: courseName }),
+            async () => {
+                const pars = [];
+                const yards = [];
+                
+                for (let i = 1; i <= 18; i++) {
+                    pars.push(parseInt(document.getElementById(`newPar${i}`).value) || 4);
+                    yards.push(parseInt(document.getElementById(`newYards${i}`).value) || 0);
+                }
+                
+                const course = {
+                    id: State.editingCourse || IDGenerator.generateCourseId(),
+                    name: courseName,
+                    location: document.getElementById('newCourseLocation').value.trim(),
+                    pars: pars,
+                    yards: yards,
+                    totalPar: pars.reduce((a, b) => a + b, 0),
+                    totalYards: yards.reduce((a, b) => a + b, 0),
+                    createdAt: new Date().toISOString()
+                };
+                
+                if (State.editingCourse) {
+                    State.updateCoursePreset(State.editingCourse, course);
+                    UI.showToast('Course updated!', 'success');
+                } else {
+                    State.addCoursePreset(course);
+                    UI.showToast('Course preset saved!', 'success');
+                }
+                
+                UI.closeCreateCourseModal();
+                this.renderList();
+            },
+            'Failed to save course'
+        );
+    },
+    
+    edit(courseId) {
+        const course = State.getCoursePresetById(courseId);
+        if (!course) return;
         
-        const pars = [];
+        State.editingCourse = courseId;
+        document.getElementById('createCourseTitle').textContent = 'Edit Course Preset';
+        
+        document.getElementById('newCourseName').value = course.name;
+        document.getElementById('newCourseLocation').value = course.location || '';
+        
         for (let i = 1; i <= 18; i++) {
-            pars.push(parseInt(document.getElementById(`par${i}`).value) || 4);
+            document.getElementById(`newPar${i}`).value = course.pars[i - 1];
+            document.getElementById(`newYards${i}`).value = course.yards[i - 1];
         }
-        round.pars = pars;
+        
+        this.updateCourseTotals();
+        UI.showCreateCourseModal();
+        UI.closeCoursePresetsModal();
+    },
+    
+    async delete(courseId) {
+        const course = State.getCoursePresetById(courseId);
+        if (!confirm(`Delete "${course.name}"?`)) return;
+        
+        State.deleteCoursePreset(courseId);
+        this.renderList();
+        UI.showToast('Course deleted!', 'success');
+    },
+    
+    renderList() {
+        const list = document.getElementById('coursePresetsList');
+        
+        if (State.coursePresets.length === 0) {
+            list.innerHTML = '<p style="text-align: center; color: #999;">No course presets yet. Create one to get started!</p>';
+            return;
+        }
+        
+        list.innerHTML = State.coursePresets
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(course => `
+                <div class="course-item">
+                    <div>
+                        <strong>${course.name}</strong>
+                        ${course.location ? `<span class="course-preset-badge">${course.location}</span>` : ''}
+                        <br>
+                        <small>Par ${course.totalPar} • ${course.totalYards} yards</small>
+                    </div>
+                    <div class="course-item-actions">
+                        <button class="icon-btn" onclick="app.coursePresets.edit('${course.id}')" title="Edit">✏️</button>
+                        <button class="icon-btn" onclick="app.coursePresets.delete('${course.id}')" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+    },
+    
+    renderQuickList() {
+        const list = document.getElementById('quickCoursePresetsList');
+        
+        if (State.coursePresets.length === 0) {
+            list.innerHTML = '<p style="text-align: center; color: #999;">No course presets available.<br>Create one from the main menu!</p>';
+            return;
+        }
+        
+        list.innerHTML = State.coursePresets
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(course => `
+                <div class="course-item" onclick="app.coursePresets.applyToRound('${course.id}')">
+                    <div>
+                        <strong>${course.name}</strong>
+                        ${course.location ? `<span class="course-preset-badge">${course.location}</span>` : ''}
+                        <br>
+                        <small>Par ${course.totalPar} • ${course.totalYards} yards</small>
+                    </div>
+                </div>
+            `).join('');
+    },
+    
+    async applyToRound(courseId) {
+        const course = State.getCoursePresetById(courseId);
+        if (!course) return;
+        
+        const round = State.getCurrentRound();
+        round.courseName = course.name;
+        round.courseId = courseId;
+        round.pars = [...course.pars];
+        round.yards = [...course.yards];
         
         State.save();
         await FirebaseSync.syncRound(round);
         
-        UI.closeCourseModal();
+        UI.closeQuickCourseModal();
         UI.updateCurrentRoundDisplay();
         UI.updateHoleDisplay();
-        UI.updateQuickStats();
+        UI.showToast(`Course "${course.name}" applied!`, 'success');
+    },
+    
+    async applyQuickSetup() {
+        const courseName = document.getElementById('quickCourseName').value.trim() || 'Local Course';
+        const tees = document.getElementById('quickTees').value;
+        const totalPar = parseInt(document.getElementById('quickPar').value);
         
-        UI.showToast('Course details saved!', 'success');
+        const round = State.getCurrentRound();
+        round.courseName = courseName;
+        round.courseId = null;
+        round.tees = tees;
+        
+        const parsDistribution = this.distributeParForTotal(totalPar);
+        round.pars = parsDistribution;
+        round.yards = State.defaultYards;
+        
+        State.save();
+        await FirebaseSync.syncRound(round);
+        
+        UI.closeQuickCourseModal();
+        UI.updateCurrentRoundDisplay();
+        UI.updateHoleDisplay();
+        UI.showToast('Course setup applied!', 'success');
+    },
+    
+    distributeParForTotal(totalPar) {
+        const pars = [4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5];
+        const currentTotal = pars.reduce((a, b) => a + b, 0);
+        const diff = totalPar - currentTotal;
+        
+        if (diff === 0) return pars;
+        
+        if (diff > 0) {
+            for (let i = 0; i < Math.abs(diff); i++) {
+                const idx = [3, 8, 12, 17][i % 4];
+                if (pars[idx] === 5) pars[idx] = 6;
+                else pars[idx] = 5;
+            }
+        } else {
+            for (let i = 0; i < Math.abs(diff); i++) {
+                const idx = [2, 6, 11, 15][i % 4];
+                if (pars[idx] === 3) continue;
+                pars[idx] = 3;
+            }
+        }
+        
+        return pars;
+    },
+    
+    updateCourseTotals() {
+        let totalPar = 0;
+        let totalYards = 0;
+        
+        for (let i = 1; i <= 18; i++) {
+            const par = parseInt(document.getElementById(`newPar${i}`).value) || 0;
+            const yards = parseInt(document.getElementById(`newYards${i}`).value) || 0;
+            totalPar += par;
+            totalYards += yards;
+        }
+        
+        document.getElementById('newCourseTotalPar').textContent = totalPar;
+        document.getElementById('newCourseTotalYards').textContent = totalYards > 0 ? totalYards : '-';
     }
 };
+
+for (let i = 1; i <= 18; i++) {
+    ['newPar', 'newYards'].forEach(prefix => {
+        const el = document.getElementById(`${prefix}${i}`);
+        if (el) {
+            el.addEventListener('input', () => CoursePresetManager.updateCourseTotals());
+        }
+    });
+}
 
 // ============================================================================
 // STATISTICS MANAGER
@@ -1987,9 +2407,7 @@ const StatsManager = {
         const putts = shots.filter(s => s.isPutt).length;
         const penalties = shots.filter(s => s.isPenalty).length;
         const avgDistance = Math.round(shots.reduce((sum, s) => sum + s.distance, 0) / totalShots);
-        const uniqueClubs = [...new Set(shots.map(s => s.club))].length;
         
-        // Calculate GIR and FIR
         let girCount = 0;
         let firCount = 0;
         let firTotal = 0;
@@ -1998,13 +2416,11 @@ const StatsManager = {
             const par = State.getPar(hole);
             const holeShots = State.getShotsForHole(State.currentRoundId, hole);
             
-            // GIR
             const shotsToGreen = holeShots.findIndex(s => s.lie === 'Green');
             if (shotsToGreen !== -1 && (shotsToGreen + 1) <= (par - 2)) {
                 girCount++;
             }
             
-            // FIR (only for par 4/5)
             if (par >= 4) {
                 firTotal++;
                 const secondShot = holeShots.find(s => s.shotNumber === 2);
@@ -2052,7 +2468,6 @@ const StatsManager = {
             </div>
         `;
         
-        // Club stats
         const clubData = {};
         shots.forEach(shot => {
             if (!clubData[shot.club]) {
@@ -2087,7 +2502,6 @@ const StatsManager = {
         
         document.getElementById('clubStats').innerHTML = clubStatsHTML;
         
-        // Scoring analysis
         let birdies = 0, pars = 0, bogeys = 0, doubleBogeys = 0;
         holesPlayed.forEach(hole => {
             const par = State.getPar(hole);
@@ -2149,6 +2563,13 @@ const ScorecardManager = {
             <span class="course-info-label">Date:</span>
             <span class="course-info-value">${new Date(round.date).toLocaleDateString()}</span>
         </div>`;
+        const totalYards = round.yards ? round.yards.reduce((a,b) => a+b, 0) : 0;
+        if (totalYards > 0) {
+            scorecardHTML += `<div class="course-info-row">
+                <span class="course-info-label">Total Yardage:</span>
+                <span class="course-info-value">${totalYards} yds</span>
+            </div>`;
+        }
         scorecardHTML += '</div>';
         
         scorecardHTML += Object.keys(holeData)
@@ -2158,6 +2579,7 @@ const ScorecardManager = {
                 const shotCount = holeShots.length;
                 const hasShots = shotCount > 0;
                 const par = State.getPar(parseInt(hole));
+                const yards = State.getYards(parseInt(hole));
                 const scoreToPar = shotCount - par;
                 
                 let scoreClass = '';
@@ -2170,7 +2592,7 @@ const ScorecardManager = {
                 return `
                     <div class="hole-card ${scoreClass}" onclick="app.holes.goTo(${hole})">
                         <div class="hole-header">
-                            <div class="hole-title">Hole ${hole} • Par ${par}</div>
+                            <div class="hole-title">Hole ${hole} • Par ${par}${yards ? ` • ${yards} yds` : ''}</div>
                             <div class="shot-count">${shotCount} ${shotCount === 1 ? 'shot' : 'shots'}</div>
                         </div>
                         ${hasShots ? `
@@ -2244,7 +2666,7 @@ window.app = {
     shots: ShotManager,
     holes: HoleManager,
     rounds: RoundManager,
-    course: CourseManager,
+    coursePresets: CoursePresetManager,
     stats: StatsManager,
     scorecard: ScorecardManager,
     export: ExportManager,
@@ -2256,15 +2678,12 @@ window.app = {
 // ============================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        console.log('🌏️ Initializing CaddieLog Pro...');
+        console.log('🏌️ Initializing CaddieLog Pro...');
         
-        // Initialize Firebase
         await FirebaseSync.initialize();
         
-        // Load state
         State.load();
         
-        // Initialize UI
         UI.updateCurrentRoundDisplay();
         UI.updateHoleDisplay();
         UI.updateQuickStats();
@@ -2273,12 +2692,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         console.log('✅ CaddieLog Pro ready!');
         
-        // Show course setup on first load
         const hasSetupCourse = localStorage.getItem('hasSetupCourse');
         if (!hasSetupCourse) {
             setTimeout(() => {
-                if (confirm('Welcome to CaddieLog Pro! Would you like to set up your course details?')) {
-                    UI.showCourseModal();
+                if (confirm('Welcome to CaddieLog Pro! Would you like to create a course preset or set up your round?')) {
+                    UI.showQuickCourseModal();
                 }
                 localStorage.setItem('hasSetupCourse', 'true');
             }, 1000);
