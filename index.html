@@ -6,59 +6,90 @@
     <title>CaddieLog Pro - Golf Shot Tracker</title>
     <style>
         :root {
-            --primary-green: #2d6a4f;
-            --light-bg: #f8f9fa;
+            --primary: #2c3e50;
+            --primary-dark: #1a252f;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --light-bg: #ecf0f1;
             --white: #ffffff;
-            --secondary: #52b788;
-            --danger: #bc4749;
-            --warning: #f4a261;
-            --success: #52b788;
-            --birdie: #4caf50;
-            --par: #2196f3;
-            --bogey: #ff9800;
-            --double-bogey: #f44336;
+            --border: #bdc3c7;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+            --info: #3498db;
+            --birdie: #27ae60;
+            --par: #3498db;
+            --bogey: #f39c12;
+            --double-bogey: #e74c3c;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--light-bg);
-            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 600px;
             width: 100%;
             background: var(--white);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px var(--shadow);
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        h1 { color: var(--primary-green); text-align: center; margin-bottom: 10px; }
-        h3 { color: var(--primary-green); margin-top: 0; }
-        h4 { color: var(--primary-green); margin-top: 15px; margin-bottom: 10px; }
+        h1 { 
+            color: var(--primary); 
+            text-align: center; 
+            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        h3 { 
+            color: var(--primary); 
+            margin-top: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        h4 { 
+            color: var(--secondary); 
+            margin-top: 20px; 
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .input-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .input-row-three {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .input-row-four {
@@ -69,9 +100,10 @@
 
         label { 
             display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
-            font-size: 14px; 
+            margin-bottom: 6px; 
+            font-weight: 600; 
+            font-size: 14px;
+            color: var(--text-dark);
         }
 
         .label-required::after {
@@ -81,16 +113,20 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border-color 0.2s;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: var(--white);
+            color: var(--text-dark);
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary-green);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
         input.error, select.error, textarea.error {
@@ -100,8 +136,9 @@
         .error-message {
             color: var(--danger);
             font-size: 12px;
-            margin-top: 5px;
+            margin-top: 6px;
             display: none;
+            font-weight: 500;
         }
 
         .error-message.show {
@@ -110,31 +147,44 @@
 
         textarea {
             resize: vertical;
-            min-height: 60px;
-            font-family: inherit;
+            min-height: 70px;
         }
 
         button {
             width: 100%;
-            padding: 15px;
-            background-color: var(--primary-green);
+            padding: 14px 20px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
-        button:active { opacity: 0.8; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+        }
+
+        button:active { 
+            transform: translateY(0);
+        }
+        
+        button:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed;
+            transform: none;
+        }
 
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .button-group-three {
@@ -143,27 +193,55 @@
             gap: 10px;
         }
 
-        .secondary-btn { background-color: var(--secondary); font-size: 14px; padding: 10px; }
-        .danger-btn { background-color: var(--danger); font-size: 14px; padding: 10px; }
-        .warning-btn { background-color: var(--warning); font-size: 14px; padding: 10px; }
+        .secondary-btn { 
+            background: var(--secondary);
+            font-size: 14px; 
+            padding: 12px 16px;
+        }
+        
+        .secondary-btn:hover {
+            background: #2c3e50;
+        }
+        
+        .danger-btn { 
+            background: var(--danger);
+            font-size: 14px; 
+            padding: 12px 16px;
+        }
+        
+        .danger-btn:hover {
+            background: #c0392b;
+        }
+        
+        .warning-btn { 
+            background: var(--warning);
+            font-size: 14px; 
+            padding: 12px 16px;
+        }
+        
+        .warning-btn:hover {
+            background: #e67e22;
+        }
 
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--primary-green);
+            background: var(--primary);
             color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
             animation: slideIn 0.3s ease-out;
             z-index: 1000;
-            max-width: 300px;
+            max-width: 320px;
+            font-weight: 500;
         }
 
         .toast.error { background: var(--danger); }
         .toast.success { background: var(--success); }
         .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
 
         @keyframes slideIn {
             from { transform: translateX(400px); opacity: 0; }
@@ -172,73 +250,114 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 12px;
             background: white;
             font-size: 14px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
         th, td {
             text-align: left;
-            padding: 10px 8px;
-            border-bottom: 1px solid #eee;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--light-bg);
         }
 
-        th { background-color: var(--primary-green); color: white; font-size: 13px; }
+        th { 
+            background: var(--primary);
+            color: white; 
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--light-bg);
+        }
 
         .shot-actions {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
 
         .icon-btn {
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 6px 10px;
             font-size: 16px;
-            transition: transform 0.1s;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            width: auto;
         }
 
-        .icon-btn:active { transform: scale(0.9); }
+        .icon-btn:hover {
+            background: var(--light-bg);
+            transform: scale(1.1);
+        }
+
+        .icon-btn:active { 
+            transform: scale(0.95);
+        }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
+            gap: 12px;
+            margin: 16px 0;
         }
 
         .stat-card {
-            background: var(--light-bg);
-            padding: 15px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px;
+            border-radius: 12px;
             text-align: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-green);
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
         }
 
         .stat-label {
             font-size: 12px;
-            color: #666;
-            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .club-stats {
-            margin-top: 15px;
+            margin-top: 16px;
         }
 
         .club-stat-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px;
+            align-items: center;
+            padding: 14px;
             background: var(--light-bg);
-            margin-bottom: 8px;
-            border-radius: 6px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            transition: all 0.2s ease;
+        }
+
+        .club-stat-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
         .round-selector {
@@ -248,23 +367,33 @@
         .round-list, .course-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .round-item, .course-item {
-            padding: 12px;
+            padding: 14px 16px;
             background: var(--light-bg);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 2px solid transparent;
         }
 
-        .round-item:hover, .course-item:hover { background: #e9ecef; }
-        .round-item.active, .course-item.active { background: var(--secondary); color: white; }
+        .round-item:hover, .course-item:hover { 
+            background: #d5dbdb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .round-item.active, .course-item.active { 
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
 
         .modal {
             display: none;
@@ -273,60 +402,89 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal.show { display: flex; }
 
         .modal-content {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            max-width: 500px;
+            padding: 28px;
+            border-radius: 16px;
+            max-width: 520px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .sync-status {
-            background: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 16px;
             font-size: 13px;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px var(--shadow);
         }
 
-        .sync-status.syncing { background: #fff3cd; }
-        .sync-status.offline { background: #f8d7da; }
+        .sync-status.syncing { 
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .sync-status.offline { 
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
 
         .tabs {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid var(--light-bg);
+            overflow-x: auto;
         }
 
         .tab {
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             border: none;
             background: none;
-            color: #666;
+            color: var(--text-light);
             font-weight: 600;
-            transition: color 0.2s;
+            transition: all 0.2s ease;
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            color: var(--primary);
         }
 
         .tab.active {
-            color: var(--primary-green);
-            border-bottom-color: var(--primary-green);
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .tab-content {
@@ -339,16 +497,18 @@
 
         .hole-card {
             background: var(--light-bg);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 16px;
+            border-radius: 10px;
             margin-bottom: 12px;
-            border-left: 4px solid #ddd;
+            border-left: 5px solid var(--border);
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
         .hole-card:hover {
-            transform: translateX(2px);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
         }
 
         .hole-card.birdie { border-left-color: var(--birdie); }
@@ -360,34 +520,36 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .hole-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary-green);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         .shot-count {
-            background: var(--primary-green);
+            background: var(--primary);
             color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .score-display {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             font-size: 14px;
+            align-items: center;
         }
 
         .score-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
         }
 
         .score-badge.birdie { background: var(--birdie); color: white; }
@@ -399,66 +561,83 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 12px;
         }
 
         .hole-stat {
             text-align: center;
-            padding: 8px;
+            padding: 10px;
             background: white;
-            border-radius: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
         .hole-stat-value {
-            font-weight: bold;
-            font-size: 16px;
-            color: var(--primary-green);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
         }
 
         .hole-stat-label {
-            color: #666;
+            color: var(--text-light);
             font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
+            gap: 12px;
+            padding: 12px 14px;
             background: var(--light-bg);
-            border-radius: 6px;
+            border-radius: 8px;
+            flex-wrap: wrap;
         }
 
         .checkbox-group input[type="checkbox"] {
-            width: auto;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 500;
             cursor: pointer;
         }
 
         .quick-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .quick-stat {
             text-align: center;
-            padding: 12px;
-            background: var(--light-bg);
-            border-radius: 8px;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow);
         }
 
         .quick-stat-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary-green);
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
         }
 
         .quick-stat-label {
             font-size: 11px;
-            color: #666;
+            color: rgba(255, 255, 255, 0.9);
             margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
 
         .loading {
@@ -468,32 +647,38 @@
 
         .course-info {
             background: var(--light-bg);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
         }
 
         .course-info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 14px;
         }
 
+        .course-info-row:last-child {
+            margin-bottom: 0;
+        }
+
         .course-info-label {
-            color: #666;
+            color: var(--text-light);
+            font-weight: 500;
         }
 
         .course-info-value {
-            font-weight: bold;
-            color: var(--primary-green);
+            font-weight: 700;
+            color: var(--primary);
         }
 
         .hole-input-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .hole-input-item {
@@ -503,38 +688,83 @@
 
         .hole-input-item label {
             font-size: 11px;
-            margin-bottom: 3px;
-            color: #666;
+            margin-bottom: 4px;
+            color: var(--text-light);
+            font-weight: 600;
         }
 
         .hole-input-item input {
-            padding: 8px;
+            padding: 8px 10px;
             font-size: 14px;
         }
 
         .course-preset-badge {
             display: inline-block;
-            background: var(--primary-green);
+            background: var(--accent);
             color: white;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 12px;
             font-size: 11px;
             margin-left: 8px;
+            font-weight: 600;
         }
 
         .course-item-actions {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
+        }
+
+        .penalty-badge {
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .oob-indicator {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .input-row, .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hole-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
+
 <body>
 
 <div class="sync-status" id="syncStatus">
@@ -567,24 +797,24 @@
             <button class="secondary-btn" onclick="app.ui.showRoundModal()">📋 Manage Rounds</button>
             <button class="secondary-btn" onclick="app.rounds.createNew()">➕ New Round</button>
         </div>
-        <div style="margin-top: 10px; text-align: center; font-size: 14px; color: #666;">
+        <div style="margin-top: 12px; text-align: center; font-size: 14px; color: var(--text-light); font-weight: 500;">
             <strong id="currentRoundName">Current Round: Today's Round</strong>
         </div>
     </div>
 
-    <button class="secondary-btn" onclick="app.ui.showCoursePresetsModal()" style="margin-top: 10px; width: 100%;">
-    🏌️ Course Presets & Setup
+    <button class="secondary-btn" onclick="app.ui.showCoursePresetsModal()" style="margin-top: 12px; width: 100%;">
+        🏌️ Course Presets & Setup
     </button>
 
     <!-- Hole Navigation -->
-    <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-top: 15px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-            <button class="icon-btn" onclick="app.holes.previous()" style="font-size: 24px; padding: 8px 12px;">◀</button>
+    <div style="background: var(--light-bg); padding: 16px; border-radius: 10px; margin-top: 16px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <button class="icon-btn" onclick="app.holes.previous()" style="font-size: 24px; padding: 10px 14px; background: var(--secondary); color: white; border-radius: 8px;">◀</button>
             <div style="text-align: center;">
-                <div style="font-size: 28px; font-weight: bold; color: var(--primary-green);" id="currentHoleDisplay">Hole 1</div>
-                <div style="font-size: 14px; color: #666;" id="holeShotsCount">0 shots • Par -</div>
+                <div style="font-size: 32px; font-weight: 700; color: var(--primary);" id="currentHoleDisplay">Hole 1</div>
+                <div style="font-size: 14px; color: var(--text-light); font-weight: 500;" id="holeShotsCount">0 shots • Par -</div>
             </div>
-            <button class="icon-btn" onclick="app.holes.next()" style="font-size: 24px; padding: 8px 12px;">▶</button>
+            <button class="icon-btn" onclick="app.holes.next()" style="font-size: 24px; padding: 10px 14px; background: var(--secondary); color: white; border-radius: 8px;">▶</button>
         </div>
         
         <div class="hole-stats">
@@ -606,14 +836,14 @@
             </div>
         </div>
         
-        <button onclick="app.holes.complete()" style="background-color: var(--secondary); margin-top: 10px;">✓ Complete Hole & Continue</button>
+        <button onclick="app.holes.complete()" style="background: var(--success); margin-top: 12px;">✓ Complete Hole & Continue</button>
     </div>
 
     <!-- Shot Entry Form -->
-    <div class="input-row">
+    <div class="input-row" style="margin-top: 20px;">
         <div class="input-group">
             <label class="label-required">Hole Number</label>
-            <input type="number" id="hole" value="1" min="1" max="18" readonly style="background: #f5f5f5;">
+            <input type="number" id="hole" value="1" min="1" max="18" readonly style="background: var(--light-bg); border-color: var(--border);">
             <div class="error-message" id="error-hole"></div>
         </div>
         <div class="input-group">
@@ -657,6 +887,7 @@
                 <option value="Slice">Slice</option>
                 <option value="Thin">Thin</option>
                 <option value="Fat">Fat</option>
+                <option value="Out of Bounds">Out of Bounds</option>
             </select>
         </div>
     </div>
@@ -681,10 +912,10 @@
 
     <div class="checkbox-group">
         <input type="checkbox" id="isPutt">
-        <label for="isPutt" style="margin: 0;">This is a putt</label>
+        <label for="isPutt">This is a putt</label>
         
         <input type="checkbox" id="isPenalty" style="margin-left: 20px;">
-        <label for="isPenalty" style="margin: 0;">Penalty stroke</label>
+        <label for="isPenalty">Penalty stroke</label>
     </div>
 
     <div class="input-group">
@@ -693,7 +924,7 @@
     </div>
 
     <button onclick="app.shots.add()">Record Shot</button>
-    <button class="warning-btn" onclick="app.shots.undoLast()" style="margin-top: 10px;">↶ Undo Last Shot</button>
+    <button class="warning-btn" onclick="app.shots.undoLast()" style="margin-top: 12px;">↶ Undo Last Shot</button>
 </div>
 
 <!-- Tabs -->
@@ -719,7 +950,7 @@
             </thead>
             <tbody id="shotBody"></tbody>
         </table>
-        <div class="button-group" style="margin-top: 15px;">
+        <div class="button-group" style="margin-top: 16px;">
             <button class="secondary-btn" onclick="app.export.toCSV()">📥 Export CSV</button>
             <button class="danger-btn" onclick="app.rounds.clear()">🗑️ Clear Round</button>
         </div>
@@ -736,10 +967,10 @@
         <h3>Round Statistics</h3>
         <div class="stats-grid" id="statsGrid"></div>
         
-        <h3>Club Performance</h3>
+        <h3 style="margin-top: 24px;">Club Performance</h3>
         <div class="club-stats" id="clubStats"></div>
         
-        <h3>Scoring Analysis</h3>
+        <h3 style="margin-top: 24px;">Scoring Analysis</h3>
         <div id="scoringAnalysis"></div>
     </div>
 </div>
@@ -749,7 +980,7 @@
     <div class="modal-content">
         <h3>Manage Rounds</h3>
         <div class="round-list" id="roundList"></div>
-        <button class="secondary-btn" onclick="app.ui.closeRoundModal()" style="margin-top: 15px;">Close</button>
+        <button class="secondary-btn" onclick="app.ui.closeRoundModal()" style="margin-top: 16px;">Close</button>
     </div>
 </div>
 
@@ -758,10 +989,10 @@
     <div class="modal-content">
         <div class="section-header">
             <h3>Course Presets</h3>
-            <button class="secondary-btn" onclick="app.coursePresets.showCreateModal()" style="width: auto; padding: 8px 15px; font-size: 14px;">➕ New Course</button>
+            <button class="secondary-btn" onclick="app.coursePresets.showCreateModal()" style="width: auto; padding: 10px 16px; font-size: 14px;">➕ New Course</button>
         </div>
         <div class="course-list" id="coursePresetsList"></div>
-        <button class="secondary-btn" onclick="app.ui.closeCoursePresetsModal()" style="margin-top: 15px;">Close</button>
+        <button class="secondary-btn" onclick="app.ui.closeCoursePresetsModal()" style="margin-top: 16px;">Close</button>
     </div>
 </div>
 
@@ -879,7 +1110,7 @@
             </div>
         </div>
         
-        <div class="course-info" style="margin-top: 15px;">
+        <div class="course-info" style="margin-top: 16px;">
             <div class="course-info-row">
                 <span class="course-info-label">Total Par:</span>
                 <span class="course-info-value" id="newCourseTotalPar">72</span>
@@ -890,21 +1121,21 @@
             </div>
         </div>
         
-        <div class="button-group" style="margin-top: 15px;">
+        <div class="button-group" style="margin-top: 16px;">
             <button class="secondary-btn" onclick="app.coursePresets.save()">💾 Save Course</button>
             <button class="danger-btn" onclick="app.ui.closeCreateCourseModal()">Cancel</button>
         </div>
     </div>
 </div>
 
-<!-- Quick Course Setup Modal (for rounds) -->
+<!-- Quick Course Setup Modal -->
 <div id="quickCourseModal" class="modal">
     <div class="modal-content">
         <h3>Select or Create Course</h3>
         
-        <div class="button-group-three" style="margin-bottom: 15px;">
+        <div class="button-group-three" style="margin-bottom: 16px;">
             <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('presets')">📚 Presets</button>
-            <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('quick')">⚡ Quick Setup</button>
+            <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('quick')">⚡ Quick</button>
             <button class="secondary-btn" onclick="app.ui.showQuickCourseTab('custom')">🎨 Custom</button>
         </div>
         
@@ -942,13 +1173,13 @@
         
         <!-- Custom Tab -->
         <div id="quickCourseCustom" class="tab-content">
-            <p style="text-align: center; color: #666; font-size: 14px;">
+            <p style="text-align: center; color: var(--text-light); font-size: 14px;">
                 For detailed hole-by-hole setup, use the Course Presets feature.
             </p>
             <button class="secondary-btn" onclick="app.coursePresets.showCreateModal(); app.ui.closeQuickCourseModal();">Create Full Course Preset</button>
         </div>
         
-        <button class="danger-btn" onclick="app.ui.closeQuickCourseModal()" style="margin-top: 15px;">Cancel</button>
+        <button class="danger-btn" onclick="app.ui.closeQuickCourseModal()" style="margin-top: 16px;">Cancel</button>
     </div>
 </div>
 
@@ -958,7 +1189,7 @@
         <h3>Edit Shot</h3>
         <div class="input-group">
             <label>Hole Number</label>
-            <input type="number" id="editHole" min="1" max="18" readonly style="background: #f5f5f5;">
+            <input type="number" id="editHole" min="1" max="18" readonly style="background: var(--light-bg); border-color: var(--border);">
         </div>
         <div class="input-group">
             <label class="label-required">Club Used</label>
@@ -998,6 +1229,7 @@
                 <option value="Slice">Slice</option>
                 <option value="Thin">Thin</option>
                 <option value="Fat">Fat</option>
+                <option value="Out of Bounds">Out of Bounds</option>
             </select>
         </div>
         <div class="input-group">
@@ -1013,10 +1245,10 @@
         </div>
         <div class="checkbox-group">
             <input type="checkbox" id="editIsPutt">
-            <label for="editIsPutt" style="margin: 0;">This is a putt</label>
+            <label for="editIsPutt">This is a putt</label>
             
             <input type="checkbox" id="editIsPenalty" style="margin-left: 20px;">
-            <label for="editIsPenalty" style="margin: 0;">Penalty stroke</label>
+            <label for="editIsPenalty">Penalty stroke</label>
         </div>
         <div class="input-group">
             <label>Notes</label>
@@ -1034,7 +1266,7 @@
 
 <script type="module">
 // ============================================================================
-// FIREBASE SETUP - MUST BE FIRST
+// FIREBASE SETUP
 // ============================================================================
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -1093,7 +1325,6 @@ const State = {
     editingCourse: null,
     userId: null,
     
-    // Default par 72 course
     defaultPars: [4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5],
     defaultYards: [400,380,175,520,410,395,165,430,550,385,415,190,535,400,410,180,425,560],
     
@@ -1243,7 +1474,6 @@ const State = {
         this.save();
     },
     
-    // Course Preset methods
     addCoursePreset(course) {
         this.coursePresets.push(course);
         this.save();
@@ -1767,24 +1997,26 @@ const UI = {
 };
 
 // ============================================================================
-// SHOT MANAGER
+// SHOT MANAGER - WITH OUT OF BOUNDS HANDLING
 // ============================================================================
 const ShotManager = {
     async add() {
         const holeShots = State.getShotsForHole(State.currentRoundId, State.currentHole);
         const shotNumber = holeShots.length + 1;
+        const result = document.getElementById('result').value;
         
         const shotData = {
             hole: parseInt(document.getElementById('hole').value),
             club: document.getElementById('club').value,
             distance: parseInt(document.getElementById('distance').value),
-            result: document.getElementById('result').value,
+            result: result,
             lie: document.getElementById('lie').value,
             distanceRemaining: parseInt(document.getElementById('distanceRemaining').value) || null,
             isPutt: document.getElementById('isPutt').checked,
-            isPenalty: document.getElementById('isPenalty').checked,
+            isPenalty: document.getElementById('isPenalty').checked || result === 'Out of Bounds',
             notes: document.getElementById('notes').value,
-            shotNumber: shotNumber
+            shotNumber: shotNumber,
+            isOutOfBounds: result === 'Out of Bounds'
         };
         
         await ErrorHandler.validateAndExecute(
@@ -1800,19 +2032,45 @@ const ShotManager = {
                 State.addShot(shot);
                 await FirebaseSync.syncShot(shot);
                 
+                // Handle OOB: automatically add penalty stroke
+                if (shot.isOutOfBounds) {
+                    const penaltyShot = {
+                        id: IDGenerator.generateShotId(),
+                        roundId: State.currentRoundId,
+                        hole: shot.hole,
+                        club: 'Penalty',
+                        distance: 0,
+                        result: 'Penalty',
+                        lie: shot.lie,
+                        distanceRemaining: shot.distanceRemaining,
+                        isPutt: false,
+                        isPenalty: true,
+                        notes: 'OOB Penalty - Stroke and Distance',
+                        shotNumber: shotNumber + 1,
+                        isOutOfBounds: false,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    State.addShot(penaltyShot);
+                    await FirebaseSync.syncShot(penaltyShot);
+                    
+                    UI.showToast('⚠️ OOB! Shot + penalty stroke recorded', 'warning');
+                } else {
+                    UI.showToast('✅ Shot recorded!', 'success');
+                }
+                
                 document.getElementById('distance').value = '';
                 document.getElementById('distanceRemaining').value = '';
                 document.getElementById('notes').value = '';
                 document.getElementById('isPutt').checked = false;
                 document.getElementById('isPenalty').checked = false;
+                document.getElementById('result').value = 'Straight';
                 
                 this.suggestNextClub(shot);
                 
                 UI.updateHoleDisplay();
                 UI.updateQuickStats();
                 this.display();
-                
-                UI.showToast('✅ Shot recorded!', 'success');
             },
             'Failed to record shot'
         );
@@ -1831,14 +2089,19 @@ const ShotManager = {
         const shots = State.getShotsForHole(State.currentRoundId, State.currentHole);
         
         if (shots.length === 0) {
-            shotBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No shots recorded</td></tr>';
+            shotBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light); padding: 20px;">No shots recorded for this hole</td></tr>';
             return;
         }
         
         shotBody.innerHTML = shots.map((shot) => `
             <tr>
                 <td><strong>#${shot.shotNumber}</strong></td>
-                <td>${shot.club}${shot.isPutt ? ' 🏌️' : ''}${shot.isPenalty ? ' ⚠️' : ''}</td>
+                <td>
+                    ${shot.club}
+                    ${shot.isPutt ? ' 🏌️' : ''}
+                    ${shot.isOutOfBounds ? '<span class="penalty-badge">OOB</span>' : ''}
+                    ${shot.isPenalty && !shot.isOutOfBounds ? '<span class="penalty-badge">⚠️</span>' : ''}
+                </td>
                 <td>${shot.distance}</td>
                 <td><small>${shot.result}</small></td>
                 <td class="shot-actions">
@@ -1870,14 +2133,17 @@ const ShotManager = {
     },
     
     async saveEdit() {
+        const result = document.getElementById('editResult').value;
+        
         const updates = {
             club: document.getElementById('editClub').value,
             distance: parseInt(document.getElementById('editDistance').value),
-            result: document.getElementById('editResult').value,
+            result: result,
             lie: document.getElementById('editLie').value,
             isPutt: document.getElementById('editIsPutt').checked,
-            isPenalty: document.getElementById('editIsPenalty').checked,
-            notes: document.getElementById('editNotes').value
+            isPenalty: document.getElementById('editIsPenalty').checked || result === 'Out of Bounds',
+            notes: document.getElementById('editNotes').value,
+            isOutOfBounds: result === 'Out of Bounds'
         };
         
         await ErrorHandler.validateAndExecute(
@@ -1971,7 +2237,7 @@ const HoleManager = {
         let scoreText = '';
         
         if (scoreToPar === -2) scoreText = '🦅 Eagle!';
-        else if (scoreToPar === -1) scoreText = '🐦 Birdie!';
+        else if (scoreToPar === -1) scoreText = '🦜 Birdie!';
         else if (scoreToPar === 0) scoreText = '✓ Par';
         else if (scoreToPar === 1) scoreText = 'Bogey';
         else if (scoreToPar >= 2) scoreText = `+${scoreToPar}`;
@@ -2054,7 +2320,7 @@ const RoundManager = {
         const roundList = document.getElementById('roundList');
         
         if (State.rounds.length === 0) {
-            roundList.innerHTML = '<p style="text-align: center; color: #999;">No rounds available</p>';
+            roundList.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No rounds available</p>';
             return;
         }
         
@@ -2247,7 +2513,7 @@ const CoursePresetManager = {
         const list = document.getElementById('coursePresetsList');
         
         if (State.coursePresets.length === 0) {
-            list.innerHTML = '<p style="text-align: center; color: #999;">No course presets yet. Create one to get started!</p>';
+            list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No course presets yet. Create one to get started!</p>';
             return;
         }
         
@@ -2273,7 +2539,7 @@ const CoursePresetManager = {
         const list = document.getElementById('quickCoursePresetsList');
         
         if (State.coursePresets.length === 0) {
-            list.innerHTML = '<p style="text-align: center; color: #999;">No course presets available.<br>Create one from the main menu!</p>';
+            list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No course presets available.<br>Create one from the main menu!</p>';
             return;
         }
         
@@ -2373,6 +2639,7 @@ const CoursePresetManager = {
     }
 };
 
+// Event listeners for course preset inputs
 for (let i = 1; i <= 18; i++) {
     ['newPar', 'newYards'].forEach(prefix => {
         const el = document.getElementById(`${prefix}${i}`);
@@ -2392,9 +2659,9 @@ const StatsManager = {
         
         if (shots.length === 0) {
             document.getElementById('statsGrid').innerHTML = 
-                '<p style="text-align: center; color: #999;">No shots recorded yet.</p>';
+                '<p style="text-align: center; color: var(--text-light); padding: 20px;">No shots recorded yet.</p>';
             document.getElementById('clubStats').innerHTML = 
-                '<p style="text-align: center; color: #999;">No club data available</p>';
+                '<p style="text-align: center; color: var(--text-light); padding: 20px;">No club data available</p>';
             document.getElementById('scoringAnalysis').innerHTML = '';
             return;
         }
@@ -2406,7 +2673,8 @@ const StatsManager = {
         
         const putts = shots.filter(s => s.isPutt).length;
         const penalties = shots.filter(s => s.isPenalty).length;
-        const avgDistance = Math.round(shots.reduce((sum, s) => sum + s.distance, 0) / totalShots);
+        const oobShots = shots.filter(s => s.isOutOfBounds).length;
+        const avgDistance = Math.round(shots.filter(s => !s.isPenalty).reduce((sum, s) => sum + s.distance, 0) / (totalShots - penalties));
         
         let girCount = 0;
         let firCount = 0;
@@ -2466,10 +2734,16 @@ const StatsManager = {
                 <div class="stat-value">${penalties}</div>
                 <div class="stat-label">Penalties</div>
             </div>
+            ${oobShots > 0 ? `
+                <div class="stat-card">
+                    <div class="stat-value">${oobShots}</div>
+                    <div class="stat-label">OOB Shots</div>
+                </div>
+            ` : ''}
         `;
         
         const clubData = {};
-        shots.forEach(shot => {
+        shots.filter(s => !s.isPenalty).forEach(shot => {
             if (!clubData[shot.club]) {
                 clubData[shot.club] = { distances: [], count: 0 };
             }
@@ -2517,19 +2791,19 @@ const StatsManager = {
         document.getElementById('scoringAnalysis').innerHTML = `
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--birdie);">${birdies}</div>
+                    <div class="stat-value" style="color: white;">${birdies}</div>
                     <div class="stat-label">Birdies+</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--par);">${pars}</div>
+                    <div class="stat-value" style="color: white;">${pars}</div>
                     <div class="stat-label">Pars</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--bogey);">${bogeys}</div>
+                    <div class="stat-value" style="color: white;">${bogeys}</div>
                     <div class="stat-label">Bogeys</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: var(--double-bogey);">${doubleBogeys}</div>
+                    <div class="stat-value" style="color: white;">${doubleBogeys}</div>
                     <div class="stat-label">Double+</div>
                 </div>
             </div>
@@ -2600,11 +2874,11 @@ const ScorecardManager = {
                                 <span class="score-badge ${scoreClass}">
                                     ${scoreToPar === 0 ? 'E' : (scoreToPar > 0 ? '+' + scoreToPar : scoreToPar)}
                                 </span>
-                                <span style="font-size: 12px; color: #666;">
+                                <span style="font-size: 12px; color: var(--text-light);">
                                     ${holeShots.filter(s => s.isPutt).length} putts
                                 </span>
                             </div>
-                        ` : '<div style="color: #999; font-size: 14px; margin-top: 8px;">Not started</div>'}
+                        ` : '<div style="color: var(--text-light); font-size: 14px; margin-top: 8px;">Not started</div>'}
                     </div>
                 `;
             }).join('');
@@ -2629,7 +2903,7 @@ const ExportManager = {
         const roundName = currentRound ? currentRound.name : 'Round';
         
         const csv = [
-            ['Hole', 'Shot#', 'Club', 'Distance', 'Result', 'Lie', 'Putt', 'Penalty', 'Distance Remaining', 'Notes', 'Timestamp'].join(','),
+            ['Hole', 'Shot#', 'Club', 'Distance', 'Result', 'Lie', 'Putt', 'Penalty', 'OOB', 'Distance Remaining', 'Notes', 'Timestamp'].join(','),
             ...shots
                 .sort((a, b) => a.hole - b.hole || a.shotNumber - b.shotNumber)
                 .map(s => [
@@ -2641,6 +2915,7 @@ const ExportManager = {
                     s.lie,
                     s.isPutt ? 'Yes' : 'No',
                     s.isPenalty ? 'Yes' : 'No',
+                    s.isOutOfBounds ? 'Yes' : 'No',
                     s.distanceRemaining || '',
                     `"${(s.notes || '').replace(/"/g, '""')}"`,
                     new Date(s.timestamp).toLocaleString()
