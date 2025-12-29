@@ -752,28 +752,33 @@
     </div>
 
     <div class="input-row">
-        <div class="input-group">
-            <label>Lie Type</label>
-            <select id="lie">
-                <option value="Tee">Tee</option>
-                <option value="Fairway">Fairway</option>
-                <option value="Rough">Rough</option>
-                <option value="Bunker">Bunker</option>
-                <option value="Green">Green</option>
-                <option value="Recovery">Recovery</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Distance Remaining</label>
-            <input type="number" id="distanceRemaining" placeholder="To pin" min="0">
-        </div>
-    </div>
+    <div class="input-group">
+    <label>Lie Type (Hitting From)</label>
+    <select id="lie">
+        <option value="Tee">Tee</option>
+        <option value="Fairway">Fairway</option>
+        <option value="Rough">Rough</option>
+        <option value="Bunker">Bunker</option>
+        <option value="Green">Green</option>
+        <option value="Recovery">Recovery</option>
+    </select>
+</div>
+<div class="input-group">
+    <label>Lands On</label>
+    <select id="landsOn">
+        <option value="">Select...</option>
+        <option value="Fairway">Fairway</option>
+        <option value="Rough">Rough</option>
+        <option value="Bunker">Bunker</option>
+        <option value="Green">Green</option>
+        <option value="Out of Bounds">Out of Bounds</option>
+        <option value="Water">Water</option>
+    </select>
+</div>
+</div>
 
     <div class="checkbox-group">
-        <input type="checkbox" id="isPutt">
-        <label for="isPutt">This is a putt</label>
-        
-        <input type="checkbox" id="isPenalty" style="margin-left: 20px;">
+        <input type="checkbox" id="isPenalty">
         <label for="isPenalty">Penalty stroke</label>
     </div>
 
@@ -1108,10 +1113,7 @@
             </select>
         </div>
         <div class="checkbox-group">
-            <input type="checkbox" id="editIsPutt">
-            <label for="editIsPutt">This is a putt</label>
-            
-            <input type="checkbox" id="editIsPenalty" style="margin-left: 20px;">
+            <input type="checkbox" id="editIsPenalty">
             <label for="editIsPenalty">Penalty stroke</label>
         </div>
         <div class="input-group">
@@ -1127,11 +1129,6 @@
 
 </body>
 </html>
-
-<!-- CONTINUE TO PART 4 FOR FIREBASE INITIALIZATION -->
-
-// PART 4: FIREBASE INITIALIZATION & CORE SYSTEMS
-// This continues from Part 3
 
 <script type="module">
 // ============================================================================
@@ -2303,26 +2300,34 @@ const UI = {
     },
     
     calculateFIR(hole, shots) {
-        const par = State.getPar(hole);
-        if (par < 4) return 'N/A';
-        
-        const teeShot = shots.find(s => s.lie === 'Tee');
-        if (!teeShot) return '-';
-        
-        const secondShot = shots.find(s => s.shotNumber === 2);
-        if (secondShot && secondShot.lie === 'Fairway') {
-            return '✓';
-        }
-        return '✗';
-    },
+    const par = State.getPar(hole);
+    if (par < 4) return 'N/A';
     
-    calculateGIR(hole, shots, par) {
-        const shotsToGreen = shots.findIndex(s => s.lie === 'Green');
-        if (shotsToGreen === -1) return '-';
-        
-        const requiredShots = par - 2;
-        return (shotsToGreen + 1) <= requiredShots ? '✓' : '✗';
-    },
+    // FIR: Check if the tee shot (shot #1) landed on the fairway
+    const teeShot = shots.find(s => s.shotNumber === 1);
+    if (!teeShot) return '-';
+    
+    // Check where the tee shot landed
+    if (teeShot.landsOn === 'Fairway') {
+        return '✔';
+    }
+    return '✗';
+},
+
+calculateGIR(hole, shots, par) {
+    // GIR: Find which shot landed on the green
+    // Par 3: Should reach green in 1 shot
+    // Par 4: Should reach green in 2 shots
+    // Par 5: Should reach green in 3 shots
+    const requiredShots = par - 2;
+    
+    // Find the first shot that landed on the green
+    const shotToGreen = shots.find(s => s.landsOn === 'Green');
+    if (!shotToGreen) return '-';
+    
+    // Check if it was within regulation
+    return shotToGreen.shotNumber <= requiredShots ? '✔' : '✗';
+},
     
     updateCurrentRoundDisplay() {
         const currentRound = State.getCurrentRound();
@@ -2381,14 +2386,15 @@ const ShotManager = {
         const shotNumber = holeShots.length + 1;
         const result = document.getElementById('result').value;
         
+        const club = document.getElementById('club').value;
         const shotData = {
             hole: parseInt(document.getElementById('hole').value),
-            club: document.getElementById('club').value,
+            club: club,
             distance: parseInt(document.getElementById('distance').value),
             result: result,
             lie: document.getElementById('lie').value,
-            distanceRemaining: parseInt(document.getElementById('distanceRemaining').value) || null,
-            isPutt: document.getElementById('isPutt').checked,
+            landsOn: document.getElementById('landsOn').value || null,
+            isPutt: club === 'Putter',  // Automatically set based on club selection
             isPenalty: document.getElementById('isPenalty').checked || result === 'Out of Bounds',
             notes: Utils.sanitizeInput(document.getElementById('notes').value),
             shotNumber: shotNumber,
@@ -2424,7 +2430,6 @@ const ShotManager = {
                         distance: 0,
                         result: 'Penalty',
                         lie: shot.lie,
-                        distanceRemaining: shot.distanceRemaining,
                         isPutt: false,
                         isPenalty: true,
                         notes: 'OOB Penalty - Stroke and Distance',
@@ -2442,12 +2447,14 @@ const ShotManager = {
                 }
                 
                 document.getElementById('distance').value = '';
-                document.getElementById('distanceRemaining').value = '';
                 document.getElementById('notes').value = '';
-                document.getElementById('isPutt').checked = false;
                 document.getElementById('isPenalty').checked = false;
                 document.getElementById('result').value = 'Straight';
                 
+                if (shot.landsOn) {
+                document.getElementById('lie').value = shot.landsOn;
+                }
+
                 this.suggestNextClub(shot);
                 
                 UI.updateHoleDisplay();
@@ -2503,38 +2510,40 @@ const ShotManager = {
     },
     
     edit(shotId) {
-        const shot = State.getShotById(shotId);
-        if (!shot) {
-            UI.showToast('Shot not found', 'error');
-            return;
-        }
-        
-        document.getElementById('editHole').value = shot.hole;
-        document.getElementById('editClub').value = shot.club;
-        document.getElementById('editDistance').value = shot.distance;
-        document.getElementById('editResult').value = shot.result;
-        document.getElementById('editLie').value = shot.lie;
-        document.getElementById('editIsPutt').checked = shot.isPutt || false;
-        document.getElementById('editIsPenalty').checked = shot.isPenalty || false;
-        document.getElementById('editNotes').value = shot.notes || '';
-        
-        State.editingShot = shotId;
-        document.getElementById('editModal').classList.add('show');
-    },
+    const shot = State.getShotById(shotId);
+    if (!shot) {
+        UI.showToast('Shot not found', 'error');
+        return;
+    }
+    
+    document.getElementById('editHole').value = shot.hole;
+    document.getElementById('editClub').value = shot.club;
+    document.getElementById('editDistance').value = shot.distance;
+    document.getElementById('editResult').value = shot.result;
+    document.getElementById('editLie').value = shot.lie;
+    document.getElementById('editLandsOn').value = shot.landsOn || '';
+    document.getElementById('editIsPenalty').checked = shot.isPenalty || false;
+    document.getElementById('editNotes').value = shot.notes || '';
+    
+    State.editingShot = shotId;
+    document.getElementById('editModal').classList.add('show');
+},
     
     async saveEdit() {
-        const result = document.getElementById('editResult').value;
-        
-        const updates = {
-            club: document.getElementById('editClub').value,
-            distance: parseInt(document.getElementById('editDistance').value),
-            result: result,
-            lie: document.getElementById('editLie').value,
-            isPutt: document.getElementById('editIsPutt').checked,
-            isPenalty: document.getElementById('editIsPenalty').checked || result === 'Out of Bounds',
-            notes: Utils.sanitizeInput(document.getElementById('editNotes').value),
-            isOutOfBounds: result === 'Out of Bounds'
-        };
+    const result = document.getElementById('editResult').value;
+    
+    const club = document.getElementById('editClub').value;
+    const updates = {
+        club: club,
+        distance: parseInt(document.getElementById('editDistance').value),
+        result: result,
+        lie: document.getElementById('editLie').value,
+        landsOn: document.getElementById('editLandsOn').value || null,
+        isPutt: club === 'Putter',  // Automatically set based on club selection
+        isPenalty: document.getElementById('editIsPenalty').checked || result === 'Out of Bounds',
+        notes: Utils.sanitizeInput(document.getElementById('editNotes').value),
+        isOutOfBounds: result === 'Out of Bounds'
+    };
         
         await ErrorHandler.validateAndExecute(
             () => Validator.validateShot({ 
@@ -3103,16 +3112,332 @@ for (let i = 1; i <= 18; i++) {
 // ============================================================================
 // STATISTICS & SCORECARD MANAGERS (Abbreviated)
 // ============================================================================
+// ============================================================================
+// STATISTICS & SCORECARD MANAGERS
+// ============================================================================
 const StatsManager = {
     update() {
-        // Full implementation from original code...
-        // Using same logic but with optimized rendering
+        const shots = State.getShotsForRound(State.currentRoundId);
+        
+        if (shots.length === 0) {
+            document.getElementById('statsGrid').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No shots recorded yet</p>';
+            document.getElementById('clubStats').innerHTML = '';
+            document.getElementById('scoringAnalysis').innerHTML = '';
+            return;
+        }
+        
+        const holesPlayed = [...new Set(shots.map(s => s.hole))];
+        const totalScore = shots.length;
+        const totalPar = holesPlayed.reduce((sum, h) => sum + State.getPar(h), 0);
+        const scoreToPar = totalScore - totalPar;
+        
+        const putts = shots.filter(s => s.isPutt).length;
+        const penalties = shots.filter(s => s.isPenalty).length;
+        
+        let fairwaysHit = 0;
+        let fairwaysTotal = 0;
+        let greensHit = 0;
+        let greensTotal = 0;
+        
+        holesPlayed.forEach(hole => {
+            const par = State.getPar(hole);
+            const holeShots = State.getShotsForHole(State.currentRoundId, hole);
+            
+            // FIR calculation
+            if (par >= 4) {
+                fairwaysTotal++;
+                const teeShot = holeShots.find(s => s.shotNumber === 1);
+                if (teeShot && teeShot.landsOn === 'Fairway') {
+                    fairwaysHit++;
+                }
+            }
+            
+            // GIR calculation
+            greensTotal++;
+            const requiredShots = par - 2;
+            const shotToGreen = holeShots.find(s => s.landsOn === 'Green');
+            if (shotToGreen && shotToGreen.shotNumber <= requiredShots) {
+                greensHit++;
+            }
+        });
+        
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-value">${scoreToPar > 0 ? '+' : ''}${scoreToPar}</div>
+                <div class="stat-label">Score to Par</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${putts}</div>
+                <div class="stat-label">Total Putts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${(putts / holesPlayed.length).toFixed(1)}</div>
+                <div class="stat-label">Putts/Hole</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${fairwaysHit}/${fairwaysTotal}</div>
+                <div class="stat-label">Fairways Hit</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${greensHit}/${greensTotal}</div>
+                <div class="stat-label">Greens in Reg</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${penalties}</div>
+                <div class="stat-label">Penalty Shots</div>
+            </div>
+        `;
+        
+        // Club statistics
+        const clubData = {};
+        shots.filter(s => !s.isPenalty).forEach(shot => {
+            if (!clubData[shot.club]) {
+                clubData[shot.club] = { count: 0, totalDistance: 0, distances: [] };
+            }
+            clubData[shot.club].count++;
+            clubData[shot.club].totalDistance += shot.distance;
+            clubData[shot.club].distances.push(shot.distance);
+        });
+        
+        const clubStats = document.getElementById('clubStats');
+        clubStats.innerHTML = Object.entries(clubData)
+            .sort((a, b) => b[1].count - a[1].count)
+            .map(([club, data]) => {
+                const avgDistYards = data.totalDistance / data.count;
+                const maxDistYards = Math.max(...data.distances);
+                const avgDistMetres = (avgDistYards * 0.9144).toFixed(0);
+                const maxDistMetres = (maxDistYards * 0.9144).toFixed(0);
+                return `
+                    <div class="club-stat-item">
+                        <div>
+                            <strong>${club}</strong><br>
+                            <small>${data.count} shot${data.count !== 1 ? 's' : ''} • Avg: ${avgDistMetres}m • Max: ${maxDistMetres}m</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        
+        // Scoring analysis
+        const scoringData = { eagles: 0, birdies: 0, pars: 0, bogeys: 0, doubles: 0 };
+        
+        holesPlayed.forEach(hole => {
+            const par = State.getPar(hole);
+            const holeShots = State.getShotsForHole(State.currentRoundId, hole);
+            const score = holeShots.length;
+            const diff = score - par;
+            
+            if (diff <= -2) scoringData.eagles++;
+            else if (diff === -1) scoringData.birdies++;
+            else if (diff === 0) scoringData.pars++;
+            else if (diff === 1) scoringData.bogeys++;
+            else if (diff >= 2) scoringData.doubles++;
+        });
+        
+        const scoringAnalysis = document.getElementById('scoringAnalysis');
+        scoringAnalysis.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stat-value">${scoringData.eagles}</div>
+                    <div class="stat-label">Eagles or Better</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <div class="stat-value">${scoringData.birdies}</div>
+                    <div class="stat-label">Birdies</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="stat-value">${scoringData.pars}</div>
+                    <div class="stat-label">Pars</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stat-value">${scoringData.bogeys}</div>
+                    <div class="stat-label">Bogeys</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="stat-value">${scoringData.doubles}</div>
+                    <div class="stat-label">Double+</div>
+                </div>
+            </div>
+        `;
     }
 };
 
 const ScorecardManager = {
     display() {
-        // Full implementation from original code...
+        const scorecardView = document.getElementById('scorecardView');
+        const currentRound = State.getCurrentRound();
+        
+        if (!currentRound) {
+            scorecardView.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No round selected</p>';
+            return;
+        }
+        
+        const fragment = document.createDocumentFragment();
+        
+        // Front 9
+        const front9 = document.createElement('div');
+        front9.innerHTML = '<h4>Front Nine</h4>';
+        
+        for (let hole = 1; hole <= 9; hole++) {
+            const holeCard = this.createHoleCard(hole, currentRound);
+            front9.appendChild(holeCard);
+        }
+        
+        fragment.appendChild(front9);
+        
+        // Back 9
+        const back9 = document.createElement('div');
+        back9.innerHTML = '<h4 style="margin-top: 24px;">Back Nine</h4>';
+        
+        for (let hole = 10; hole <= 18; hole++) {
+            const holeCard = this.createHoleCard(hole, currentRound);
+            back9.appendChild(holeCard);
+        }
+        
+        fragment.appendChild(back9);
+        
+        // Summary
+        const summary = this.createSummary();
+        fragment.appendChild(summary);
+        
+        scorecardView.innerHTML = '';
+        scorecardView.appendChild(fragment);
+    },
+    
+    createHoleCard(hole, round) {
+        const par = round.pars ? round.pars[hole - 1] : 4;
+        const yards = round.yards ? round.yards[hole - 1] : null;
+        const holeShots = State.getShotsForHole(State.currentRoundId, hole);
+        const score = holeShots.length;
+        const scoreToPar = score > 0 ? score - par : 0;
+        
+        let scoreClass = '';
+        if (score > 0) {
+            if (scoreToPar <= -2) scoreClass = 'birdie';
+            else if (scoreToPar === -1) scoreClass = 'birdie';
+            else if (scoreToPar === 0) scoreClass = 'par';
+            else if (scoreToPar === 1) scoreClass = 'bogey';
+            else scoreClass = 'double-bogey';
+        }
+        
+        const card = document.createElement('div');
+        card.className = `hole-card ${scoreClass}`;
+        card.onclick = () => app.holes.goTo(hole);
+        
+        let scoreDisplay = '';
+        if (score > 0) {
+            let scoreBadgeClass = scoreClass;
+            let scoreText = '';
+            if (scoreToPar <= -2) scoreText = `Eagle ${score}`;
+            else if (scoreToPar === -1) scoreText = `Birdie ${score}`;
+            else if (scoreToPar === 0) scoreText = `Par ${score}`;
+            else if (scoreToPar === 1) scoreText = `Bogey ${score}`;
+            else scoreText = `${score} (+${scoreToPar})`;
+            
+            scoreDisplay = `<span class="score-badge ${scoreBadgeClass}">${scoreText}</span>`;
+        }
+        
+        const putts = holeShots.filter(s => s.isPutt).length;
+        const fir = this.calculateHoleFIR(hole, holeShots, par);
+        const gir = this.calculateHoleGIR(hole, holeShots, par);
+        
+        card.innerHTML = `
+            <div class="hole-header">
+                <span class="hole-title">Hole ${hole}</span>
+                <span class="shot-count">${score > 0 ? score : '-'} shot${score !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="score-display">
+                <span>Par ${par}${yards ? ` • ${yards} yds` : ''}</span>
+                ${scoreDisplay}
+            </div>
+            ${score > 0 ? `
+                <div class="hole-stats">
+                    <div class="hole-stat">
+                        <div class="hole-stat-value">${putts}</div>
+                        <div class="hole-stat-label">Putts</div>
+                    </div>
+                    <div class="hole-stat">
+                        <div class="hole-stat-value">${fir}</div>
+                        <div class="hole-stat-label">FIR</div>
+                    </div>
+                    <div class="hole-stat">
+                        <div class="hole-stat-value">${gir}</div>
+                        <div class="hole-stat-label">GIR</div>
+                    </div>
+                    <div class="hole-stat">
+                        <div class="hole-stat-value">${score - putts}</div>
+                        <div class="hole-stat-label">To Green</div>
+                    </div>
+                </div>
+            ` : ''}
+        `;
+        
+        return card;
+    },
+    
+    calculateHoleFIR(hole, shots, par) {
+        if (par < 4) return 'N/A';
+        const teeShot = shots.find(s => s.shotNumber === 1);
+        if (!teeShot) return '-';
+        return teeShot.landsOn === 'Fairway' ? '✓' : '✗';
+    },
+    
+    calculateHoleGIR(hole, shots, par) {
+        const requiredShots = par - 2;
+        const shotToGreen = shots.find(s => s.landsOn === 'Green');
+        if (!shotToGreen) return '-';
+        return shotToGreen.shotNumber <= requiredShots ? '✓' : '✗';
+    },
+    
+    createSummary() {
+        const shots = State.getShotsForRound(State.currentRoundId);
+        const holesPlayed = [...new Set(shots.map(s => s.hole))];
+        
+        if (shots.length === 0) {
+            const div = document.createElement('div');
+            div.innerHTML = '<div class="course-info" style="margin-top: 24px;"><p style="text-align: center; color: var(--text-light);">No shots recorded yet</p></div>';
+            return div;
+        }
+        
+        const totalScore = shots.length;
+        const totalPar = holesPlayed.reduce((sum, h) => sum + State.getPar(h), 0);
+        const scoreToPar = totalScore - totalPar;
+        const putts = shots.filter(s => s.isPutt).length;
+        
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <h4 style="margin-top: 24px;">Round Summary</h4>
+            <div class="course-info">
+                <div class="course-info-row">
+                    <span class="course-info-label">Holes Played:</span>
+                    <span class="course-info-value">${holesPlayed.length}/18</span>
+                </div>
+                <div class="course-info-row">
+                    <span class="course-info-label">Total Score:</span>
+                    <span class="course-info-value">${totalScore}</span>
+                </div>
+                <div class="course-info-row">
+                    <span class="course-info-label">Par:</span>
+                    <span class="course-info-value">${totalPar}</span>
+                </div>
+                <div class="course-info-row">
+                    <span class="course-info-label">Score to Par:</span>
+                    <span class="course-info-value" style="color: ${scoreToPar > 0 ? 'var(--danger)' : scoreToPar < 0 ? 'var(--success)' : 'var(--info)'};">
+                        ${scoreToPar > 0 ? '+' : ''}${scoreToPar}
+                    </span>
+                </div>
+                <div class="course-info-row">
+                    <span class="course-info-label">Total Putts:</span>
+                    <span class="course-info-value">${putts}</span>
+                </div>
+                <div class="course-info-row">
+                    <span class="course-info-label">Putts per Hole:</span>
+                    <span class="course-info-value">${(putts / holesPlayed.length).toFixed(1)}</span>
+                </div>
+            </div>
+        `;
+        
+        return div;
     }
 };
 
@@ -3129,7 +3454,7 @@ const ExportManager = {
         const roundName = currentRound ? currentRound.name : 'Round';
         
         const csv = [
-            ['Hole', 'Shot#', 'Club', 'Distance', 'Result', 'Lie', 'Putt', 'Penalty', 'OOB', 'Distance Remaining', 'Notes', 'Timestamp'].join(','),
+            ['Hole', 'Shot#', 'Club', 'Distance', 'Result', 'Lie', 'Putt', 'Penalty', 'OOB', 'Notes', 'Timestamp'].join(','),
             ...shots
                 .sort((a, b) => a.hole - b.hole || a.shotNumber - b.shotNumber)
                 .map(s => [
@@ -3142,7 +3467,6 @@ const ExportManager = {
                     s.isPutt ? 'Yes' : 'No',
                     s.isPenalty ? 'Yes' : 'No',
                     s.isOutOfBounds ? 'Yes' : 'No',
-                    s.distanceRemaining || '',
                     Utils.sanitizeCSVField(s.notes || ''),
                     new Date(s.timestamp).toLocaleString()
                 ].join(','))
