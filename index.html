@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CaddieLog Pro - Golf Shot Tracker</title>
+    <style>
+        :root {
+            --primary-green: #2d6a4f;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --secondary: #52b788;
+            --danger: #bc4749;
+            --warning: #f4a261;
+            --success: #52b788;
+            --birdie: #4caf50;
+            --par: #2196f3;
+            --bogey: #ff9800;
+            --double-bogey: #f44336;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 { color: var(--primary-green); text-align: center; margin-bottom: 10px; }
+        h3 { color: var(--primary-green); margin-top: 0; }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .input-row-three {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            font-size: 14px; 
+        }
+
+        .label-required::after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+
+        input.error, select.error, textarea.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-weight: 600;
+        }
+
+        button:active { opacity: 0.8; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .secondary-btn { background-color: var(--secondary); font-size: 14px; padding: 10px; }
+        .danger-btn { background-color: var(--danger); font-size: 14px; padding: 10px; }
+        .warning-btn { background-color: var(--warning); font-size: 14px; padding: 10px; }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .toast.error { background: var(--danger); }
+        .toast.success { background: var(--success); }
+        .toast.warning { background: var(--warning); }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+            font-size: 14px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th { background-color: var(--primary-green); color: white; font-size: 13px; }
+
+        .shot-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 16px;
+            transition: transform 0.1s;
+        }
+
+        .icon-btn:active { transform: scale(0.9); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-card {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .club-stats {
+            margin-top: 15px;
+        }
+
+        .club-stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--light-bg);
+            margin-bottom: 8px;
+            border-radius: 6px;
+        }
+
+        .round-selector {
+            margin-bottom: 20px;
+        }
+
+        .round-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .round-item {
+            padding: 12px;
+            background: var(--light-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .round-item:hover { background: #e9ecef; }
+        .round-item.active { background: var(--secondary); color: white; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .sync-status {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sync-status.syncing { background: #fff3cd; }
+        .sync-status.offline { background: #f8d7da; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #666;
+            font-weight: 600;
+            transition: color 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-green);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .hole-card {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ddd;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .hole-card:hover {
+            transform: translateX(2px);
+        }
+
+        .hole-card.birdie { border-left-color: var(--birdie); }
+        .hole-card.par { border-left-color: var(--par); }
+        .hole-card.bogey { border-left-color: var(--bogey); }
+        .hole-card.double-bogey { border-left-color: var(--double-bogey); }
+
+        .hole-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .hole-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+
+        .shot-count {
+            background: var(--primary-green);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .score-display {
+            display: flex;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .score-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .score-badge.birdie { background: var(--birdie); color: white; }
+        .score-badge.par { background: var(--par); color: white; }
+        .score-badge.bogey { background: var(--bogey); color: white; }
+        .score-badge.double-bogey { background: var(--double-bogey); color: white; }
+
+        .hole-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .hole-stat {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .hole-stat-value {
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--primary-green);
+        }
+
+        .hole-stat-label {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--light-bg);
+            border-radius: 6px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .quick-stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+
+        .quick-stat-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .scorecard-table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+
+        .scorecard-table th {
+            background: var(--primary-green);
+            color: white;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        .scorecard-table td {
+            padding: 8px 4px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        .scorecard-table .hole-number {
+            font-weight: bold;
+            background: var(--light-bg);
+        }
+
+        .course-info {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .course-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .course-info-label {
+            color: #666;
+        }
+
+        .course-info-value {
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+    </style>
+</head>
+<body>
+
+<div class="sync-status" id="syncStatus">
+    <span>🔄</span>
+    <span id="syncStatusText">Connecting to cloud...</span>
+</div>
+
+<div class="container">
+    <h1>⛳ CaddieLog Pro</h1>
+    
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+        <div class="quick-stat">
+            <div class="quick-stat-value" id="quickScore">-</div>
+            <div class="quick-stat-label">Score</div>
+        </div>
+        <div class="quick-stat">
+            <div class="quick-stat-value" id="quickPutts">-</div>
+            <div class="quick-stat-label">Putts</div>
+        </div>
+        <div class="quick-stat">
+            <div class="quick-stat-value" id="quickFairways">-</div>
+            <div class="quick-stat-label">Fairways</div>
+        </div>
+    </div>
+
+    <!-- Round Management -->
+    <div class="round-selector">
+        <div class="button-group">
+            <button class="secondary-btn" onclick="app.ui.showRoundModal()">📋 Manage Rounds</button>
+            <button class="secondary-btn" onclick="app.rounds.createNew()">➕ New Round</button>
+        </div>
+        <div style="margin-top: 10px; text-align: center; font-size: 14px; color: #666;">
+            <strong id="currentRoundName">Current Round: Today's Round</strong>
+        </div>
+    </div>
+
+    <!-- Hole Navigation -->
+    <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; margin-top: 15px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <button class="icon-btn" onclick="app.holes.previous()" style="font-size: 24px; padding: 8px 12px;">◀</button>
+            <div style="text-align: center;">
+                <div style="font-size: 28px; font-weight: bold; color: var(--primary-green);" id="currentHoleDisplay">Hole 1</div>
+                <div style="font-size: 14px; color: #666;" id="holeShotsCount">0 shots • Par -</div>
+            </div>
+            <button class="icon-btn" onclick="app.holes.next()" style="font-size: 24px; padding: 8px 12px;">▶</button>
+        </div>
+        
+        <div class="hole-stats">
+            <div class="hole-stat">
+                <div class="hole-stat-value" id="holeScore">-</div>
+                <div class="hole-stat-label">Score</div>
+            </div>
+            <div class="hole-stat">
+                <div class="hole-stat-value" id="holePutts">-</div>
+                <div class="hole-stat-label">Putts</div>
+            </div>
+            <div class="hole-stat">
+                <div class="hole-stat-value" id="holeFIR">-</div>
+                <div class="hole-stat-label">FIR</div>
+            </div>
+            <div class="hole-stat">
+                <div class="hole-stat-value" id="holeGIR">-</div>
+                <div class="hole-stat-label">GIR</div>
+            </div>
+        </div>
+        
+        <button onclick="app.holes.complete()" style="background-color: var(--secondary); margin-top: 10px;">✓ Complete Hole & Continue</button>
+    </div>
+
+    <!-- Shot Entry Form -->
+    <div class="input-row">
+        <div class="input-group">
+            <label class="label-required">Hole Number</label>
+            <input type="number" id="hole" value="1" min="1" max="18" readonly style="background: #f5f5f5;">
+            <div class="error-message" id="error-hole"></div>
+        </div>
+        <div class="input-group">
+            <label class="label-required">Distance (Yards)</label>
+            <input type="number" id="distance" placeholder="e.g. 245" min="0" max="600">
+            <div class="error-message" id="error-distance"></div>
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div class="input-group">
+            <label class="label-required">Club Used</label>
+            <select id="club">
+                <option value="">Select club...</option>
+                <option value="Driver">Driver</option>
+                <option value="3 Wood">3 Wood</option>
+                <option value="5 Wood">5 Wood</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="3 Iron">3 Iron</option>
+                <option value="4 Iron">4 Iron</option>
+                <option value="5 Iron">5 Iron</option>
+                <option value="6 Iron">6 Iron</option>
+                <option value="7 Iron">7 Iron</option>
+                <option value="8 Iron">8 Iron</option>
+                <option value="9 Iron">9 Iron</option>
+                <option value="PW">Pitching Wedge</option>
+                <option value="GW">Gap Wedge</option>
+                <option value="SW">Sand Wedge</option>
+                <option value="LW">Lob Wedge</option>
+                <option value="Putter">Putter</option>
+            </select>
+            <div class="error-message" id="error-club"></div>
+        </div>
+        <div class="input-group">
+            <label>Shot Result</label>
+            <select id="result">
+                <option value="Straight">Straight</option>
+                <option value="Draw">Draw</option>
+                <option value="Fade">Fade</option>
+                <option value="Hook">Hook</option>
+                <option value="Slice">Slice</option>
+                <option value="Thin">Thin</option>
+                <option value="Fat">Fat</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="input-row">
+        <div class="input-group">
+            <label>Lie Type</label>
+            <select id="lie">
+                <option value="Tee">Tee</option>
+                <option value="Fairway">Fairway</option>
+                <option value="Rough">Rough</option>
+                <option value="Bunker">Bunker</option>
+                <option value="Green">Green</option>
+                <option value="Recovery">Recovery</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Distance Remaining</label>
+            <input type="number" id="distanceRemaining" placeholder="To pin" min="0">
+        </div>
+    </div>
+
+    <div class="checkbox-group">
+        <input type="checkbox" id="isPutt">
+        <label for="isPutt" style="margin: 0;">This is a putt</label>
+        
+        <input type="checkbox" id="isPenalty" style="margin-left: 20px;">
+        <label for="isPenalty" style="margin: 0;">Penalty stroke</label>
+    </div>
+
+    <div class="input-group">
+        <label>Notes (optional)</label>
+        <textarea id="notes" placeholder="Wind, slope, conditions..."></textarea>
+    </div>
+
+    <button onclick="app.shots.add()">Record Shot</button>
+    <button class="warning-btn" onclick="app.shots.undoLast()" style="margin-top: 10px;">↶ Undo Last Shot</button>
+</div>
+
+<!-- Continue in Part 2 -->
+ <!-- Tabs -->
+<div class="container">
+    <div class="tabs">
+        <button class="tab active" onclick="app.ui.switchTab('shots', event)">Current Hole</button>
+        <button class="tab" onclick="app.ui.switchTab('scorecard', event)">Scorecard</button>
+        <button class="tab" onclick="app.ui.switchTab('stats', event)">Statistics</button>
+    </div>
+
+    <!-- Shots Tab -->
+    <div id="shots-tab" class="tab-content active">
+        <h3>Shots on Current Hole</h3>
+        <table id="shotTable">
+            <thead>
+                <tr>
+                    <th>Shot #</th>
+                    <th>Club</th>
+                    <th>Dist</th>
+                    <th>Result</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="shotBody"></tbody>
+        </table>
+        <div class="button-group" style="margin-top: 15px;">
+            <button class="secondary-btn" onclick="app.export.toCSV()">📥 Export CSV</button>
+            <button class="danger-btn" onclick="app.rounds.clear()">🗑️ Clear Round</button>
+        </div>
+    </div>
+
+    <!-- Scorecard Tab -->
+    <div id="scorecard-tab" class="tab-content">
+        <h3>Round Scorecard</h3>
+        <div id="scorecardView"></div>
+    </div>
+
+    <!-- Stats Tab -->
+    <div id="stats-tab" class="tab-content">
+        <h3>Round Statistics</h3>
+        <div class="stats-grid" id="statsGrid"></div>
+        
+        <h3>Club Performance</h3>
+        <div class="club-stats" id="clubStats"></div>
+        
+        <h3>Scoring Analysis</h3>
+        <div id="scoringAnalysis"></div>
+    </div>
+</div>
+
+<!-- Round Management Modal -->
+<div id="roundModal" class="modal">
+    <div class="modal-content">
+        <h3>Manage Rounds</h3>
+        <div class="round-list" id="roundList"></div>
+        <button class="secondary-btn" onclick="app.ui.closeRoundModal()" style="margin-top: 15px;">Close</button>
+    </div>
+</div>
+
+<!-- Course Setup Modal -->
+<div id="courseModal" class="modal">
+    <div class="modal-content">
+        <h3>Course Setup</h3>
+        <div class="input-group">
+            <label>Course Name</label>
+            <input type="text" id="courseName" placeholder="Pine Valley Golf Club">
+        </div>
+        <div class="input-group">
+            <label>Tees Played</label>
+            <select id="tees">
+                <option value="Black">Black (Championship)</option>
+                <option value="Blue">Blue</option>
+                <option value="White" selected>White</option>
+                <option value="Red">Red</option>
+            </select>
+        </div>
+        <h4>Par for Each Hole</h4>
+        <div class="input-row-three">
+            <input type="number" id="par1" value="4" min="3" max="6" placeholder="1">
+            <input type="number" id="par2" value="4" min="3" max="6" placeholder="2">
+            <input type="number" id="par3" value="3" min="3" max="6" placeholder="3">
+        </div>
+        <div class="input-row-three">
+            <input type="number" id="par4" value="5" min="3" max="6" placeholder="4">
+            <input type="number" id="par5" value="4" min="3" max="6" placeholder="5">
+            <input type="number" id="par6" value="4" min="3" max="6" placeholder="6">
+        </div>
+        <div class="input-row-three">
+            <input type="number" id="par7" value="3" min="3" max="6" placeholder="7">
+            <input type="number" id="par8" value="4" min="3" max="6" placeholder="8">
+            <input type="number" id="par9" value="5" min="3" max="6" placeholder="9">
+        </div>
+        <h4 style="margin-top: 15px;">Back Nine</h4>
+        <div class="input-row-three">
+            <input type="number" id="par10" value="4" min="3" max="6" placeholder="10">
+            <input type="number" id="par11" value="4" min="3" max="6" placeholder="11">
+            <input type="number" id="par12" value="3" min="3" max="6" placeholder="12">
+        </div>
+        <div class="input-row-three">
+            <input type="number" id="par13" value="5" min="3" max="6" placeholder="13">
+            <input type="number" id="par14" value="4" min="3" max="6" placeholder="14">
+            <input type="number" id="par15" value="4" min="3" max="6" placeholder="15">
+        </div>
+        <div class="input-row-three">
+            <input type="number" id="par16" value="3" min="3" max="6" placeholder="16">
+            <input type="number" id="par17" value="4" min="3" max="6" placeholder="17">
+            <input type="number" id="par18" value="5" min="3" max="6" placeholder="18">
+        </div>
+        <div class="button-group" style="margin-top: 15px;">
+            <button class="secondary-btn" onclick="app.course.save()">Save Course</button>
+            <button class="danger-btn" onclick="app.ui.closeCourseModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Shot Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3>Edit Shot</h3>
+        <div class="input-group">
+            <label>Hole Number</label>
+            <input type="number" id="editHole" min="1" max="18" readonly style="background: #f5f5f5;">
+        </div>
+        <div class="input-group">
+            <label class="label-required">Club Used</label>
+            <select id="editClub">
+                <option value="">Select club...</option>
+                <option value="Driver">Driver</option>
+                <option value="3 Wood">3 Wood</option>
+                <option value="5 Wood">5 Wood</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="3 Iron">3 Iron</option>
+                <option value="4 Iron">4 Iron</option>
+                <option value="5 Iron">5 Iron</option>
+                <option value="6 Iron">6 Iron</option>
+                <option value="7 Iron">7 Iron</option>
+                <option value="8 Iron">8 Iron</option>
+                <option value="9 Iron">9 Iron</option>
+                <option value="PW">Pitching Wedge</option>
+                <option value="GW">Gap Wedge</option>
+                <option value="SW">Sand Wedge</option>
+                <option value="LW">Lob Wedge</option>
+                <option value="Putter">Putter</option>
+            </select>
+            <div class="error-message" id="error-editClub"></div>
+        </div>
+        <div class="input-group">
+            <label class="label-required">Distance (Yards)</label>
+            <input type="number" id="editDistance" min="0" max="600">
+            <div class="error-message" id="error-editDistance"></div>
+        </div>
+        <div class="input-group">
+            <label>Shot Result</label>
+            <select id="editResult">
+                <option value="Straight">Straight</option>
+                <option value="Draw">Draw</option>
+                <option value="Fade">Fade</option>
+                <option value="Hook">Hook</option>
+                <option value="Slice">Slice</option>
+                <option value="Thin">Thin</option>
+                <option value="Fat">Fat</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Lie Type</label>
+            <select id="editLie">
+                <option value="Tee">Tee</option>
+                <option value="Fairway">Fairway</option>
+                <option value="Rough">Rough</option>
+                <option value="Bunker">Bunker</option>
+                <option value="Green">Green</option>
+                <option value="Recovery">Recovery</option>
+            </select>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="editIsPutt">
+            <label for="editIsPutt" style="margin: 0;">This is a putt</label>
+            
+            <input type="checkbox" id="editIsPenalty" style="margin-left: 20px;">
+            <label for="editIsPenalty" style="margin: 0;">Penalty stroke</label>
+        </div>
+        <div class="input-group">
+            <label>Notes</label>
+            <textarea id="editNotes"></textarea>
+        </div>
+        <div class="button-group">
+            <button class="secondary-btn" onclick="app.shots.saveEdit()">Save</button>
+            <button class="danger-btn" onclick="app.ui.closeEditModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+<script type="module">
+// ============================================================================
+// FIREBASE SETUP - MUST BE FIRST
+// ============================================================================
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCbBX_K1r81fAnuhVhq2DLJyPX7QB_ON-w",
+  authDomain: "court-craft-session.firebaseapp.com",
+  projectId: "court-craft-session",
+  storageBucket: "court-craft-session.firebasestorage.app",
+  messagingSenderId: "446020248286",
+  appId: "1:446020248286:web:3b4c31784306732aa2184f",
+  measurementId: "G-LR1K4NKB3B"
+};
+
+let firebaseApp, db, auth, currentUser;
+let isFirebaseEnabled = false;
+
+try {
+    firebaseApp = initializeApp(firebaseConfig);
+    db = getFirestore(firebaseApp);
+    auth = getAuth(firebaseApp);
+    isFirebaseEnabled = true;
+    console.log("✅ Firebase initialized");
+} catch (error) {
+    console.error("❌ Firebase init error:", error);
+}
+
+// ============================================================================
+// ID GENERATION SYSTEM
+// ============================================================================
+const IDGenerator = {
+    generateRoundId() {
+        return `round_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    },
+    
+    generateShotId() {
+        return `shot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    },
+    
+    generateCourseId() {
+        return `course_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+};
+
+// ============================================================================
+// CENTRALIZED STATE MANAGEMENT
+// ============================================================================
+const State = {
+    rounds: [],
+    shots: [],
+    courses: [],
+    currentRoundId: null,
+    currentHole: 1,
+    editingShot: null,
+    userId: null,
+    
+    // Default par 72 course
+    defaultPars: [4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5],
+    
+    load() {
+        try {
+            this.rounds = JSON.parse(localStorage.getItem('golfRounds') || '[]');
+            this.shots = JSON.parse(localStorage.getItem('golfShots') || '[]');
+            this.courses = JSON.parse(localStorage.getItem('golfCourses') || '[]');
+            this.currentRoundId = localStorage.getItem('currentRoundId');
+            
+            if (this.rounds.length === 0) {
+                const defaultRound = {
+                    id: IDGenerator.generateRoundId(),
+                    name: "Today's Round",
+                    date: new Date().toISOString(),
+                    courseName: "Default Course",
+                    tees: "White",
+                    pars: this.defaultPars,
+                    completed: false
+                };
+                this.rounds.push(defaultRound);
+                this.currentRoundId = defaultRound.id;
+                this.save();
+            }
+            
+            if (!this.currentRoundId || !this.rounds.find(r => r.id === this.currentRoundId)) {
+                this.currentRoundId = this.rounds[0].id;
+            }
+            
+            this.currentHole = parseInt(localStorage.getItem(`currentHole_${this.currentRoundId}`) || '1');
+            
+            console.log('✅ State loaded:', {
+                rounds: this.rounds.length,
+                shots: this.shots.length,
+                currentRound: this.currentRoundId
+            });
+        } catch (error) {
+            console.error('Failed to load state:', error);
+            this.initializeDefaults();
+        }
+    },
+    
+    save() {
+        try {
+            localStorage.setItem('golfRounds', JSON.stringify(this.rounds));
+            localStorage.setItem('golfShots', JSON.stringify(this.shots));
+            localStorage.setItem('golfCourses', JSON.stringify(this.courses));
+            localStorage.setItem('currentRoundId', this.currentRoundId);
+            localStorage.setItem(`currentHole_${this.currentRoundId}`, this.currentHole.toString());
+        } catch (error) {
+            console.error('Failed to save state:', error);
+            throw new Error('Failed to save data. Storage may be full.');
+        }
+    },
+    
+    initializeDefaults() {
+        const defaultRound = {
+            id: IDGenerator.generateRoundId(),
+            name: "Today's Round",
+            date: new Date().toISOString(),
+            courseName: "Default Course",
+            tees: "White",
+            pars: this.defaultPars,
+            completed: false
+        };
+        this.rounds = [defaultRound];
+        this.shots = [];
+        this.courses = [];
+        this.currentRoundId = defaultRound.id;
+        this.currentHole = 1;
+        this.save();
+    },
+    
+    getShotsForHole(roundId, hole) {
+        return this.shots
+            .filter(s => s.roundId === roundId && s.hole === hole)
+            .sort((a, b) => a.shotNumber - b.shotNumber);
+    },
+    
+    getShotsForRound(roundId) {
+        return this.shots.filter(s => s.roundId === roundId);
+    },
+    
+    getCurrentRound() {
+        return this.rounds.find(r => r.id === this.currentRoundId);
+    },
+    
+    getPar(hole) {
+        const round = this.getCurrentRound();
+        return round && round.pars ? round.pars[hole - 1] : 4;
+    },
+    
+    addRound(round) {
+        this.rounds.push(round);
+        this.save();
+    },
+    
+    deleteRound(roundId) {
+        this.rounds = this.rounds.filter(r => r.id !== roundId);
+        this.shots = this.shots.filter(s => s.roundId !== roundId);
+        
+        if (this.currentRoundId === roundId && this.rounds.length > 0) {
+            this.currentRoundId = this.rounds[0].id;
+            this.currentHole = 1;
+        }
+        
+        this.save();
+    },
+    
+    addShot(shot) {
+        this.shots.push(shot);
+        this.save();
+    },
+    
+    updateShot(shotId, updates) {
+        const index = this.shots.findIndex(s => s.id === shotId);
+        if (index !== -1) {
+            this.shots[index] = { ...this.shots[index], ...updates };
+            this.save();
+            return true;
+        }
+        return false;
+    },
+    
+    deleteShot(shotId) {
+        this.shots = this.shots.filter(s => s.id !== shotId);
+        this.save();
+    },
+    
+    getShotById(shotId) {
+        return this.shots.find(s => s.id === shotId);
+    },
+    
+    clearCurrentRound() {
+        this.shots = this.shots.filter(s => s.roundId !== this.currentRoundId);
+        this.currentHole = 1;
+        this.save();
+    }
+};
+
+// ============================================================================
+// FIREBASE SYNC MANAGER
+// ============================================================================
+const FirebaseSync = {
+    pendingOperations: [],
+    isSyncing: false,
+    
+    async initialize() {
+        if (!isFirebaseEnabled) return;
+        
+        try {
+            // Sign in anonymously
+            await signInAnonymously(auth);
+            console.log('✅ Anonymous authentication successful');
+            
+            // Wait for auth state
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    State.userId = user.uid;
+                    currentUser = user;
+                    this.updateSyncStatus('synced', '✅ Connected to cloud');
+                    
+                    // Load user data from Firestore
+                    await this.loadUserData();
+                    
+                    // Process any pending operations
+                    await this.processPending();
+                } else {
+                    this.updateSyncStatus('offline', '⚠️ Offline mode');
+                }
+            });
+        } catch (error) {
+            console.error('Firebase sync error:', error);
+            this.updateSyncStatus('offline', '⚠️ Offline mode');
+        }
+    },
+    
+    updateSyncStatus(status, text) {
+        const statusEl = document.getElementById('syncStatus');
+        const textEl = document.getElementById('syncStatusText');
+        if (statusEl && textEl) {
+            statusEl.className = `sync-status ${status}`;
+            textEl.textContent = text;
+        }
+    },
+    
+    async loadUserData() {
+        if (!currentUser) return;
+        
+        try {
+            this.updateSyncStatus('syncing', '🔄 Loading your data...');
+            
+            // Load rounds
+            const roundsQuery = query(
+                collection(db, 'rounds'),
+                where('userId', '==', currentUser.uid)
+            );
+            const roundsSnapshot = await getDocs(roundsQuery);
+            const firebaseRounds = roundsSnapshot.docs.map(doc => ({
+                firestoreId: doc.id,
+                ...doc.data()
+            }));
+            
+            // Load shots
+            const shotsQuery = query(
+                collection(db, 'shots'),
+                where('userId', '==', currentUser.uid)
+            );
+            const shotsSnapshot = await getDocs(shotsQuery);
+            const firebaseShots = shotsSnapshot.docs.map(doc => ({
+                firestoreId: doc.id,
+                ...doc.data()
+            }));
+            
+            // Merge with local data (prefer Firebase data)
+            if (firebaseRounds.length > 0) {
+                State.rounds = firebaseRounds;
+            }
+            if (firebaseShots.length > 0) {
+                State.shots = firebaseShots;
+            }
+            
+            State.save();
+            this.updateSyncStatus('synced', '✅ Data synced');
+            
+            // Refresh UI
+            UI.updateCurrentRoundDisplay();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            
+        } catch (error) {
+            console.error('Failed to load user data:', error);
+            this.updateSyncStatus('offline', '⚠️ Sync failed');
+        }
+    },
+    
+    async syncRound(round) {
+        if (!currentUser) {
+            this.queueOperation({ type: 'round', data: round });
+            return;
+        }
+        
+        try {
+            const roundData = {
+                ...round,
+                userId: currentUser.uid
+            };
+            
+            if (round.firestoreId) {
+                await updateDoc(doc(db, 'rounds', round.firestoreId), roundData);
+            } else {
+                const docRef = await addDoc(collection(db, 'rounds'), roundData);
+                round.firestoreId = docRef.id;
+            }
+            
+            this.updateSyncStatus('synced', '✅ Round saved to cloud');
+        } catch (error) {
+            console.error('Failed to sync round:', error);
+            this.queueOperation({ type: 'round', data: round });
+        }
+    },
+    
+    async syncShot(shot) {
+        if (!currentUser) {
+            this.queueOperation({ type: 'shot', data: shot });
+            return;
+        }
+        
+        try {
+            const shotData = {
+                ...shot,
+                userId: currentUser.uid
+            };
+            
+            if (shot.firestoreId) {
+                await updateDoc(doc(db, 'shots', shot.firestoreId), shotData);
+            } else {
+                const docRef = await addDoc(collection(db, 'shots'), shotData);
+                shot.firestoreId = docRef.id;
+            }
+            
+            this.updateSyncStatus('synced', '✅ Synced');
+        } catch (error) {
+            console.error('Failed to sync shot:', error);
+            this.queueOperation({ type: 'shot', data: shot });
+        }
+    },
+    
+    async deleteRoundFromFirebase(roundId) {
+        if (!currentUser) return;
+        
+        const round = State.rounds.find(r => r.id === roundId);
+        if (round && round.firestoreId) {
+            try {
+                await deleteDoc(doc(db, 'rounds', round.firestoreId));
+            } catch (error) {
+                console.error('Failed to delete round from Firebase:', error);
+            }
+        }
+    },
+    
+    async deleteShotFromFirebase(shotId) {
+        if (!currentUser) return;
+        
+        const shot = State.shots.find(s => s.id === shotId);
+        if (shot && shot.firestoreId) {
+            try {
+                await deleteDoc(doc(db, 'shots', shot.firestoreId));
+            } catch (error) {
+                console.error('Failed to delete shot from Firebase:', error);
+            }
+        }
+    },
+    
+    queueOperation(operation) {
+        this.pendingOperations.push(operation);
+        localStorage.setItem('pendingSync', JSON.stringify(this.pendingOperations));
+        this.updateSyncStatus('offline', `⚠️ ${this.pendingOperations.length} pending`);
+    },
+    
+    async processPending() {
+        if (this.isSyncing || !currentUser) return;
+        
+        this.isSyncing = true;
+        const pending = JSON.parse(localStorage.getItem('pendingSync') || '[]');
+        
+        for (const op of pending) {
+            try {
+                if (op.type === 'round') {
+                    await this.syncRound(op.data);
+                } else if (op.type === 'shot') {
+                    await this.syncShot(op.data);
+                }
+            } catch (error) {
+                console.error('Failed to process pending operation:', error);
+                break;
+            }
+        }
+        
+        localStorage.setItem('pendingSync', JSON.stringify([]));
+        this.pendingOperations = [];
+        this.isSyncing = false;
+        this.updateSyncStatus('synced', '✅ All synced');
+    }
+};
+
+// Listen for online/offline events
+window.addEventListener('online', () => {
+    FirebaseSync.updateSyncStatus('syncing', '🔄 Reconnecting...');
+    FirebaseSync.processPending();
+});
+
+window.addEventListener('offline', () => {
+    FirebaseSync.updateSyncStatus('offline', '⚠️ Offline mode');
+});
+
+// Continue in Part 4 with Managers...
+// ============================================================================
+// INPUT VALIDATION
+// ============================================================================
+const Validator = {
+    validateShot(shot) {
+        const errors = {};
+        
+        if (!shot.distance && shot.distance !== 0) {
+            errors.distance = 'Distance is required';
+        } else if (isNaN(shot.distance)) {
+            errors.distance = 'Distance must be a number';
+        } else if (shot.distance < 0) {
+            errors.distance = 'Distance cannot be negative';
+        } else if (shot.distance > 600) {
+            errors.distance = 'Distance cannot exceed 600 yards';
+        }
+        
+        if (!shot.hole) {
+            errors.hole = 'Hole number is required';
+        } else if (shot.hole < 1 || shot.hole > 18) {
+            errors.hole = 'Hole must be between 1 and 18';
+        }
+        
+        if (!shot.club || shot.club === '') {
+            errors.club = 'Please select a club';
+        }
+        
+        if (!shot.result) {
+            errors.result = 'Shot result is required';
+        }
+        
+        if (!shot.lie) {
+            errors.lie = 'Lie type is required';
+        }
+        
+        return {
+            isValid: Object.keys(errors).length === 0,
+            errors
+        };
+    },
+    
+    clearErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.classList.remove('show');
+            el.textContent = '';
+        });
+        document.querySelectorAll('.error').forEach(el => {
+            el.classList.remove('error');
+        });
+    },
+    
+    showErrors(errors) {
+        this.clearErrors();
+        Object.keys(errors).forEach(field => {
+            const errorElement = document.getElementById(`error-${field}`);
+            const inputElement = document.getElementById(field);
+            
+            if (errorElement) {
+                errorElement.textContent = errors[field];
+                errorElement.classList.add('show');
+            }
+            if (inputElement) {
+                inputElement.classList.add('error');
+            }
+        });
+    }
+};
+
+// ============================================================================
+// ERROR HANDLER
+// ============================================================================
+const ErrorHandler = {
+    handle(error, userMessage = 'An error occurred') {
+        console.error('Error:', error);
+        let message = userMessage;
+        if (error instanceof Error) {
+            message = error.message || userMessage;
+        }
+        UI.showToast(message, 'error');
+        return false;
+    },
+    
+    async wrap(operation, errorMessage = 'Operation failed') {
+        try {
+            return await operation();
+        } catch (error) {
+            this.handle(error, errorMessage);
+            return null;
+        }
+    },
+    
+    async validateAndExecute(validator, operation, errorMessage) {
+        const validation = validator();
+        if (!validation.isValid) {
+            Validator.showErrors(validation.errors);
+            return false;
+        }
+        Validator.clearErrors();
+        return await this.wrap(operation, errorMessage);
+    }
+};
+
+// ============================================================================
+// UI UTILITIES
+// ============================================================================
+const UI = {
+    showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    },
+    
+    showRoundModal() {
+        RoundManager.renderRoundList();
+        document.getElementById('roundModal').classList.add('show');
+    },
+    
+    closeRoundModal() {
+        document.getElementById('roundModal').classList.remove('show');
+    },
+    
+    showCourseModal() {
+        CourseManager.loadCurrentCourse();
+        document.getElementById('courseModal').classList.add('show');
+    },
+    
+    closeCourseModal() {
+        document.getElementById('courseModal').classList.remove('show');
+    },
+    
+    closeEditModal() {
+        document.getElementById('editModal').classList.remove('show');
+        State.editingShot = null;
+        Validator.clearErrors();
+    },
+    
+    switchTab(tabName, event) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
+        document.getElementById(tabName + '-tab').classList.add('active');
+        
+        if (tabName === 'stats') {
+            StatsManager.update();
+        } else if (tabName === 'scorecard') {
+            ScorecardManager.display();
+        }
+    },
+    
+    updateHoleDisplay() {
+        const currentHole = State.currentHole;
+        const par = State.getPar(currentHole);
+        const holeShots = State.getShotsForHole(State.currentRoundId, currentHole);
+        const shotCount = holeShots.length;
+        
+        document.getElementById('hole').value = currentHole;
+        document.getElementById('currentHoleDisplay').textContent = `Hole ${currentHole}`;
+        document.getElementById('holeShotsCount').textContent = 
+            `${shotCount} shot${shotCount !== 1 ? 's' : ''} • Par ${par}`;
+        
+        // Update hole stats
+        const score = shotCount > 0 ? shotCount : '-';
+        const putts = holeShots.filter(s => s.isPutt).length;
+        const scoreToPar = shotCount > 0 ? (shotCount - par > 0 ? `+${shotCount - par}` : shotCount - par) : '-';
+        
+        document.getElementById('holeScore').textContent = score;
+        document.getElementById('holePutts').textContent = putts || '-';
+        
+        // FIR (Fairway in Regulation) - only for par 4/5
+        const fir = this.calculateFIR(currentHole, holeShots);
+        document.getElementById('holeFIR').textContent = fir;
+        
+        // GIR (Green in Regulation)
+        const gir = this.calculateGIR(currentHole, holeShots, par);
+        document.getElementById('holeGIR').textContent = gir;
+    },
+    
+    calculateFIR(hole, shots) {
+        const par = State.getPar(hole);
+        if (par < 4) return 'N/A'; // Only for par 4/5
+        
+        const teeShot = shots.find(s => s.lie === 'Tee');
+        if (!teeShot) return '-';
+        
+        const secondShot = shots.find(s => s.shotNumber === 2);
+        if (secondShot && secondShot.lie === 'Fairway') {
+            return '✓';
+        }
+        return '✗';
+    },
+    
+    calculateGIR(hole, shots, par) {
+        const shotsToGreen = shots.findIndex(s => s.lie === 'Green');
+        if (shotsToGreen === -1) return '-';
+        
+        const requiredShots = par - 2;
+        return (shotsToGreen + 1) <= requiredShots ? '✓' : '✗';
+    },
+    
+    updateCurrentRoundDisplay() {
+        const currentRound = State.getCurrentRound();
+        if (currentRound) {
+            document.getElementById('currentRoundName').textContent = 
+                `${currentRound.name} • ${currentRound.courseName}`;
+        }
+    },
+    
+    updateQuickStats() {
+        const shots = State.getShotsForRound(State.currentRoundId);
+        const round = State.getCurrentRound();
+        
+        if (shots.length === 0) {
+            document.getElementById('quickScore').textContent = '-';
+            document.getElementById('quickPutts').textContent = '-';
+            document.getElementById('quickFairways').textContent = '-';
+            return;
+        }
+        
+        const holesPlayed = [...new Set(shots.map(s => s.hole))];
+        const totalScore = shots.length;
+        const totalPar = holesPlayed.reduce((sum, h) => sum + State.getPar(h), 0);
+        const scoreToPar = totalScore - totalPar;
+        
+        document.getElementById('quickScore').textContent = 
+            scoreToPar > 0 ? `+${scoreToPar}` : scoreToPar;
+        
+        const putts = shots.filter(s => s.isPutt).length;
+        document.getElementById('quickPutts').textContent = putts;
+        
+        // Calculate fairways hit
+        let fairwaysHit = 0;
+        let fairwaysTotal = 0;
+        holesPlayed.forEach(hole => {
+            const par = State.getPar(hole);
+            if (par >= 4) {
+                fairwaysTotal++;
+                const holeShots = State.getShotsForHole(State.currentRoundId, hole);
+                const secondShot = holeShots.find(s => s.shotNumber === 2);
+                if (secondShot && secondShot.lie === 'Fairway') {
+                    fairwaysHit++;
+                }
+            }
+        });
+        
+        document.getElementById('quickFairways').textContent = 
+            fairwaysTotal > 0 ? `${fairwaysHit}/${fairwaysTotal}` : '-';
+    }
+};
+
+// ============================================================================
+// SHOT MANAGER
+// ============================================================================
+const ShotManager = {
+    async add() {
+        const holeShots = State.getShotsForHole(State.currentRoundId, State.currentHole);
+        const shotNumber = holeShots.length + 1;
+        
+        const shotData = {
+            hole: parseInt(document.getElementById('hole').value),
+            club: document.getElementById('club').value,
+            distance: parseInt(document.getElementById('distance').value),
+            result: document.getElementById('result').value,
+            lie: document.getElementById('lie').value,
+            distanceRemaining: parseInt(document.getElementById('distanceRemaining').value) || null,
+            isPutt: document.getElementById('isPutt').checked,
+            isPenalty: document.getElementById('isPenalty').checked,
+            notes: document.getElementById('notes').value,
+            shotNumber: shotNumber
+        };
+        
+        await ErrorHandler.validateAndExecute(
+            () => Validator.validateShot(shotData),
+            async () => {
+                const shot = {
+                    id: IDGenerator.generateShotId(),
+                    roundId: State.currentRoundId,
+                    ...shotData,
+                    timestamp: new Date().toISOString()
+                };
+                
+                State.addShot(shot);
+                await FirebaseSync.syncShot(shot);
+                
+                // Clear form
+                document.getElementById('distance').value = '';
+                document.getElementById('distanceRemaining').value = '';
+                document.getElementById('notes').value = '';
+                document.getElementById('isPutt').checked = false;
+                document.getElementById('isPenalty').checked = false;
+                
+                // Smart club suggestion
+                this.suggestNextClub(shot);
+                
+                UI.updateHoleDisplay();
+                UI.updateQuickStats();
+                this.display();
+                
+                UI.showToast('✅ Shot recorded!', 'success');
+            },
+            'Failed to record shot'
+        );
+    },
+    
+    suggestNextClub(lastShot) {
+        // Auto-select putter if on green
+        if (lastShot.lie === 'Green') {
+            document.getElementById('club').value = 'Putter';
+        }
+        // Keep same club for bunker shots
+        else if (lastShot.lie === 'Bunker') {
+            document.getElementById('club').value = lastShot.club;
+        }
+    },
+    
+    display() {
+        const shotBody = document.getElementById('shotBody');
+        const shots = State.getShotsForHole(State.currentRoundId, State.currentHole);
+        
+        if (shots.length === 0) {
+            shotBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No shots recorded</td></tr>';
+            return;
+        }
+        
+        shotBody.innerHTML = shots.map((shot, index) => `
+            <tr>
+                <td><strong>#${shot.shotNumber}</strong></td>
+                <td>${shot.club}${shot.isPutt ? ' 🏌️' : ''}${shot.isPenalty ? ' ⚠️' : ''}</td>
+                <td>${shot.distance}</td>
+                <td><small>${shot.result}</small></td>
+                <td class="shot-actions">
+                    <button class="icon-btn" onclick="app.shots.edit('${shot.id}')" title="Edit">✏️</button>
+                    <button class="icon-btn" onclick="app.shots.delete('${shot.id}')" title="Delete">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+    },
+    
+    edit(shotId) {
+        const shot = State.getShotById(shotId);
+        if (!shot) {
+            UI.showToast('Shot not found', 'error');
+            return;
+        }
+        
+        document.getElementById('editHole').value = shot.hole;
+        document.getElementById('editClub').value = shot.club;
+        document.getElementById('editDistance').value = shot.distance;
+        document.getElementById('editResult').value = shot.result;
+        document.getElementById('editLie').value = shot.lie;
+        document.getElementById('editIsPutt').checked = shot.isPutt || false;
+        document.getElementById('editIsPenalty').checked = shot.isPenalty || false;
+        document.getElementById('editNotes').value = shot.notes || '';
+        
+        State.editingShot = shotId;
+        document.getElementById('editModal').classList.add('show');
+    },
+    
+    async saveEdit() {
+        const updates = {
+            club: document.getElementById('editClub').value,
+            distance: parseInt(document.getElementById('editDistance').value),
+            result: document.getElementById('editResult').value,
+            lie: document.getElementById('editLie').value,
+            isPutt: document.getElementById('editIsPutt').checked,
+            isPenalty: document.getElementById('editIsPenalty').checked,
+            notes: document.getElementById('editNotes').value
+        };
+        
+        await ErrorHandler.validateAndExecute(
+            () => Validator.validateShot({ 
+                ...updates, 
+                hole: parseInt(document.getElementById('editHole').value) 
+            }),
+            async () => {
+                State.updateShot(State.editingShot, updates);
+                const shot = State.getShotById(State.editingShot);
+                await FirebaseSync.syncShot(shot);
+                
+                UI.closeEditModal();
+                UI.updateHoleDisplay();
+                UI.updateQuickStats();
+                this.display();
+                
+                UI.showToast('Shot updated!', 'success');
+            },
+            'Failed to update shot'
+        );
+    },
+    
+    async delete(shotId) {
+        if (!confirm('Delete this shot?')) return;
+        
+        await ErrorHandler.wrap(async () => {
+            await FirebaseSync.deleteShotFromFirebase(shotId);
+            State.deleteShot(shotId);
+            
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            this.display();
+            
+            UI.showToast('Shot deleted!', 'success');
+        }, 'Failed to delete shot');
+    },
+    
+    async undoLast() {
+        const shots = State.getShotsForHole(State.currentRoundId, State.currentHole);
+        
+        if (shots.length === 0) {
+            UI.showToast('No shots to undo', 'warning');
+            return;
+        }
+        
+        await this.delete(shots[shots.length - 1].id);
+    }
+};
+
+// ============================================================================
+// HOLE MANAGER
+// ============================================================================
+const HoleManager = {
+    previous() {
+        if (State.currentHole > 1) {
+            State.currentHole--;
+            State.save();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+        } else {
+            UI.showToast('Already at hole 1', 'warning');
+        }
+    },
+    
+    next() {
+        if (State.currentHole < 18) {
+            State.currentHole++;
+            State.save();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+        } else {
+            UI.showToast('Already at hole 18', 'warning');
+        }
+    },
+    
+    complete() {
+        const holeShots = State.getShotsForHole(State.currentRoundId, State.currentHole);
+        
+        if (holeShots.length === 0) {
+            if (!confirm(`No shots for Hole ${State.currentHole}. Continue?`)) {
+                return;
+            }
+        }
+        
+        const par = State.getPar(State.currentHole);
+        const score = holeShots.length;
+        const scoreToPar = score - par;
+        let scoreText = '';
+        
+        if (scoreToPar === -2) scoreText = '🦅 Eagle!';
+        else if (scoreToPar === -1) scoreText = '🐦 Birdie!';
+        else if (scoreToPar === 0) scoreText = '✓ Par';
+        else if (scoreToPar === 1) scoreText = 'Bogey';
+        else if (scoreToPar >= 2) scoreText = `+${scoreToPar}`;
+        
+        UI.showToast(`Hole ${State.currentHole}: ${score} (${scoreText})`, 'success');
+        
+        if (State.currentHole < 18) {
+            State.currentHole++;
+            State.save();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+        } else {
+            UI.showToast('🎉 Round completed!', 'success');
+            const round = State.getCurrentRound();
+            round.completed = true;
+            round.finalScore = State.getShotsForRound(State.currentRoundId).length;
+            State.save();
+            FirebaseSync.syncRound(round);
+        }
+    },
+    
+    goTo(holeNumber) {
+        State.currentHole = parseInt(holeNumber);
+        State.save();
+        UI.updateHoleDisplay();
+        UI.updateQuickStats();
+        ShotManager.display();
+        
+        document.querySelectorAll('.tab').forEach((t, idx) => {
+            t.classList.remove('active');
+            if (idx === 0) t.classList.add('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('shots-tab').classList.add('active');
+    }
+};
+
+// Continue in Part 5 with Round, Course, Stats, Export managers...
+// ============================================================================
+// ROUND MANAGER
+// ============================================================================
+const RoundManager = {
+    async createNew() {
+        const name = prompt("Enter round name:", `Round ${new Date().toLocaleDateString()}`);
+        if (!name || name.trim() === '') return;
+        
+        await ErrorHandler.wrap(async () => {
+            const round = {
+                id: IDGenerator.generateRoundId(),
+                name: name.trim(),
+                date: new Date().toISOString(),
+                courseName: "Default Course",
+                tees: "White",
+                pars: State.defaultPars,
+                completed: false,
+                weather: {
+                    temp: null,
+                    wind: null,
+                    condition: null
+                }
+            };
+            
+            State.addRound(round);
+            State.currentRoundId = round.id;
+            State.currentHole = 1;
+            State.save();
+            await FirebaseSync.syncRound(round);
+            
+            UI.updateCurrentRoundDisplay();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+            
+            UI.showToast('New round created!', 'success');
+            
+            // Prompt for course setup
+            if (confirm('Would you like to set up the course details?')) {
+                UI.showCourseModal();
+            }
+        }, 'Failed to create round');
+    },
+    
+    renderRoundList() {
+        const roundList = document.getElementById('roundList');
+        
+        if (State.rounds.length === 0) {
+            roundList.innerHTML = '<p style="text-align: center; color: #999;">No rounds available</p>';
+            return;
+        }
+        
+        roundList.innerHTML = State.rounds
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .map(round => {
+                const shotCount = State.getShotsForRound(round.id).length;
+                const totalPar = round.pars ? round.pars.reduce((a, b) => a + b, 0) : 72;
+                const scoreToPar = shotCount > 0 ? (shotCount - totalPar) : 0;
+                const scoreDisplay = shotCount > 0 ? 
+                    (scoreToPar > 0 ? `+${scoreToPar}` : scoreToPar) : 
+                    'Not started';
+                
+                return `
+                    <div class="round-item ${round.id === State.currentRoundId ? 'active' : ''}" 
+                         onclick="app.rounds.select('${round.id}')">
+                        <div>
+                            <strong>${round.name}</strong><br>
+                            <small>${new Date(round.date).toLocaleDateString()} • 
+                            ${round.courseName} • 
+                            ${scoreDisplay}
+                            ${round.completed ? ' ✓' : ''}</small>
+                        </div>
+                        <button class="icon-btn" onclick="event.stopPropagation(); app.rounds.delete('${round.id}')" 
+                                ${State.rounds.length === 1 ? 'disabled' : ''}>🗑️</button>
+                    </div>
+                `;
+            }).join('');
+    },
+    
+    async select(roundId) {
+        await ErrorHandler.wrap(async () => {
+            State.currentRoundId = roundId;
+            State.currentHole = parseInt(localStorage.getItem(`currentHole_${roundId}`) || '1');
+            State.save();
+            
+            UI.closeRoundModal();
+            UI.updateCurrentRoundDisplay();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+            
+            UI.showToast('Round switched!', 'success');
+        }, 'Failed to switch rounds');
+    },
+    
+    async delete(roundId) {
+        if (State.rounds.length === 1) {
+            UI.showToast('Cannot delete the last round', 'error');
+            return;
+        }
+        
+        const round = State.rounds.find(r => r.id === roundId);
+        const shotCount = State.getShotsForRound(roundId).length;
+        
+        if (!confirm(`Delete "${round.name}" and all ${shotCount} shots?`)) return;
+        
+        await ErrorHandler.wrap(async () => {
+            await FirebaseSync.deleteRoundFromFirebase(roundId);
+            State.deleteRound(roundId);
+            
+            UI.updateCurrentRoundDisplay();
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+            this.renderRoundList();
+            
+            UI.showToast('Round deleted!', 'success');
+        }, 'Failed to delete round');
+    },
+    
+    async clear() {
+        const shotCount = State.getShotsForRound(State.currentRoundId).length;
+        
+        if (shotCount === 0) {
+            UI.showToast('No shots to clear', 'warning');
+            return;
+        }
+        
+        if (!confirm(`Clear all ${shotCount} shots from this round?`)) return;
+        
+        await ErrorHandler.wrap(async () => {
+            // Delete shots from Firebase
+            const shots = State.getShotsForRound(State.currentRoundId);
+            for (const shot of shots) {
+                await FirebaseSync.deleteShotFromFirebase(shot.id);
+            }
+            
+            State.clearCurrentRound();
+            
+            UI.updateHoleDisplay();
+            UI.updateQuickStats();
+            ShotManager.display();
+            
+            UI.showToast('Round cleared!', 'success');
+        }, 'Failed to clear round');
+    }
+};
+
+// ============================================================================
+// COURSE MANAGER
+// ============================================================================
+const CourseManager = {
+    loadCurrentCourse() {
+        const round = State.getCurrentRound();
+        if (!round) return;
+        
+        document.getElementById('courseName').value = round.courseName || '';
+        document.getElementById('tees').value = round.tees || 'White';
+        
+        const pars = round.pars || State.defaultPars;
+        for (let i = 1; i <= 18; i++) {
+            document.getElementById(`par${i}`).value = pars[i - 1];
+        }
+    },
+    
+    async save() {
+        const round = State.getCurrentRound();
+        if (!round) return;
+        
+        round.courseName = document.getElementById('courseName').value || 'Default Course';
+        round.tees = document.getElementById('tees').value;
+        
+        const pars = [];
+        for (let i = 1; i <= 18; i++) {
+            pars.push(parseInt(document.getElementById(`par${i}`).value) || 4);
+        }
+        round.pars = pars;
+        
+        State.save();
+        await FirebaseSync.syncRound(round);
+        
+        UI.closeCourseModal();
+        UI.updateCurrentRoundDisplay();
+        UI.updateHoleDisplay();
+        UI.updateQuickStats();
+        
+        UI.showToast('Course details saved!', 'success');
+    }
+};
+
+// ============================================================================
+// STATISTICS MANAGER
+// ============================================================================
+const StatsManager = {
+    update() {
+        const shots = State.getShotsForRound(State.currentRoundId);
+        const round = State.getCurrentRound();
+        
+        if (shots.length === 0) {
+            document.getElementById('statsGrid').innerHTML = 
+                '<p style="text-align: center; color: #999;">No shots recorded yet.</p>';
+            document.getElementById('clubStats').innerHTML = 
+                '<p style="text-align: center; color: #999;">No club data available</p>';
+            document.getElementById('scoringAnalysis').innerHTML = '';
+            return;
+        }
+        
+        const holesPlayed = [...new Set(shots.map(s => s.hole))];
+        const totalShots = shots.length;
+        const totalPar = holesPlayed.reduce((sum, h) => sum + State.getPar(h), 0);
+        const scoreToPar = totalShots - totalPar;
+        
+        const putts = shots.filter(s => s.isPutt).length;
+        const penalties = shots.filter(s => s.isPenalty).length;
+        const avgDistance = Math.round(shots.reduce((sum, s) => sum + s.distance, 0) / totalShots);
+        const uniqueClubs = [...new Set(shots.map(s => s.club))].length;
+        
+        // Calculate GIR and FIR
+        let girCount = 0;
+        let firCount = 0;
+        let firTotal = 0;
+        
+        holesPlayed.forEach(hole => {
+            const par = State.getPar(hole);
+            const holeShots = State.getShotsForHole(State.currentRoundId, hole);
+            
+            // GIR
+            const shotsToGreen = holeShots.findIndex(s => s.lie === 'Green');
+            if (shotsToGreen !== -1 && (shotsToGreen + 1) <= (par - 2)) {
+                girCount++;
+            }
+            
+            // FIR (only for par 4/5)
+            if (par >= 4) {
+                firTotal++;
+                const secondShot = holeShots.find(s => s.shotNumber === 2);
+                if (secondShot && secondShot.lie === 'Fairway') {
+                    firCount++;
+                }
+            }
+        });
+        
+        const girPercentage = Math.round((girCount / holesPlayed.length) * 100);
+        const firPercentage = firTotal > 0 ? Math.round((firCount / firTotal) * 100) : 0;
+        
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-value">${totalShots}</div>
+                <div class="stat-label">Total Shots</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${scoreToPar > 0 ? '+' + scoreToPar : scoreToPar}</div>
+                <div class="stat-label">Score to Par</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${putts}</div>
+                <div class="stat-label">Total Putts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${(putts / holesPlayed.length).toFixed(1)}</div>
+                <div class="stat-label">Putts/Hole</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${girPercentage}%</div>
+                <div class="stat-label">GIR</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${firPercentage}%</div>
+                <div class="stat-label">Fairways Hit</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${avgDistance}</div>
+                <div class="stat-label">Avg Distance</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${penalties}</div>
+                <div class="stat-label">Penalties</div>
+            </div>
+        `;
+        
+        // Club stats
+        const clubData = {};
+        shots.forEach(shot => {
+            if (!clubData[shot.club]) {
+                clubData[shot.club] = { distances: [], count: 0 };
+            }
+            clubData[shot.club].distances.push(shot.distance);
+            clubData[shot.club].count++;
+        });
+        
+        const clubStatsHTML = Object.keys(clubData)
+            .sort((a, b) => clubData[b].count - clubData[a].count)
+            .map(club => {
+                const avg = Math.round(
+                    clubData[club].distances.reduce((a, b) => a + b, 0) / clubData[club].distances.length
+                );
+                const max = Math.max(...clubData[club].distances);
+                const min = Math.min(...clubData[club].distances);
+                
+                return `
+                    <div class="club-stat-item">
+                        <div>
+                            <strong>${club}</strong><br>
+                            <small>${clubData[club].count} shots</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong>${avg} yds</strong><br>
+                            <small>${min}-${max} yds</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        
+        document.getElementById('clubStats').innerHTML = clubStatsHTML;
+        
+        // Scoring analysis
+        let birdies = 0, pars = 0, bogeys = 0, doubleBogeys = 0;
+        holesPlayed.forEach(hole => {
+            const par = State.getPar(hole);
+            const score = State.getShotsForHole(State.currentRoundId, hole).length;
+            const diff = score - par;
+            
+            if (diff <= -1) birdies++;
+            else if (diff === 0) pars++;
+            else if (diff === 1) bogeys++;
+            else if (diff >= 2) doubleBogeys++;
+        });
+        
+        document.getElementById('scoringAnalysis').innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--birdie);">${birdies}</div>
+                    <div class="stat-label">Birdies+</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--par);">${pars}</div>
+                    <div class="stat-label">Pars</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--bogey);">${bogeys}</div>
+                    <div class="stat-label">Bogeys</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--double-bogey);">${doubleBogeys}</div>
+                    <div class="stat-label">Double+</div>
+                </div>
+            </div>
+        `;
+    }
+};
+
+// ============================================================================
+// SCORECARD MANAGER
+// ============================================================================
+const ScorecardManager = {
+    display() {
+        const shots = State.getShotsForRound(State.currentRoundId);
+        const round = State.getCurrentRound();
+        
+        const holeData = {};
+        for (let i = 1; i <= 18; i++) {
+            holeData[i] = State.getShotsForHole(State.currentRoundId, i);
+        }
+        
+        let scorecardHTML = '<div class="course-info">';
+        scorecardHTML += `<div class="course-info-row">
+            <span class="course-info-label">Course:</span>
+            <span class="course-info-value">${round.courseName}</span>
+        </div>`;
+        scorecardHTML += `<div class="course-info-row">
+            <span class="course-info-label">Tees:</span>
+            <span class="course-info-value">${round.tees}</span>
+        </div>`;
+        scorecardHTML += `<div class="course-info-row">
+            <span class="course-info-label">Date:</span>
+            <span class="course-info-value">${new Date(round.date).toLocaleDateString()}</span>
+        </div>`;
+        scorecardHTML += '</div>';
+        
+        scorecardHTML += Object.keys(holeData)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map(hole => {
+                const holeShots = holeData[hole];
+                const shotCount = holeShots.length;
+                const hasShots = shotCount > 0;
+                const par = State.getPar(parseInt(hole));
+                const scoreToPar = shotCount - par;
+                
+                let scoreClass = '';
+                if (scoreToPar <= -2) scoreClass = 'birdie';
+                else if (scoreToPar === -1) scoreClass = 'birdie';
+                else if (scoreToPar === 0) scoreClass = 'par';
+                else if (scoreToPar === 1) scoreClass = 'bogey';
+                else if (scoreToPar >= 2) scoreClass = 'double-bogey';
+                
+                return `
+                    <div class="hole-card ${scoreClass}" onclick="app.holes.goTo(${hole})">
+                        <div class="hole-header">
+                            <div class="hole-title">Hole ${hole} • Par ${par}</div>
+                            <div class="shot-count">${shotCount} ${shotCount === 1 ? 'shot' : 'shots'}</div>
+                        </div>
+                        ${hasShots ? `
+                            <div class="score-display">
+                                <span class="score-badge ${scoreClass}">
+                                    ${scoreToPar === 0 ? 'E' : (scoreToPar > 0 ? '+' + scoreToPar : scoreToPar)}
+                                </span>
+                                <span style="font-size: 12px; color: #666;">
+                                    ${holeShots.filter(s => s.isPutt).length} putts
+                                </span>
+                            </div>
+                        ` : '<div style="color: #999; font-size: 14px; margin-top: 8px;">Not started</div>'}
+                    </div>
+                `;
+            }).join('');
+        
+        document.getElementById('scorecardView').innerHTML = scorecardHTML;
+    }
+};
+
+// ============================================================================
+// EXPORT MANAGER
+// ============================================================================
+const ExportManager = {
+    toCSV() {
+        const shots = State.getShotsForRound(State.currentRoundId);
+        
+        if (shots.length === 0) {
+            UI.showToast('No shots to export', 'warning');
+            return;
+        }
+        
+        const currentRound = State.getCurrentRound();
+        const roundName = currentRound ? currentRound.name : 'Round';
+        
+        const csv = [
+            ['Hole', 'Shot#', 'Club', 'Distance', 'Result', 'Lie', 'Putt', 'Penalty', 'Distance Remaining', 'Notes', 'Timestamp'].join(','),
+            ...shots
+                .sort((a, b) => a.hole - b.hole || a.shotNumber - b.shotNumber)
+                .map(s => [
+                    s.hole,
+                    s.shotNumber,
+                    s.club,
+                    s.distance,
+                    s.result,
+                    s.lie,
+                    s.isPutt ? 'Yes' : 'No',
+                    s.isPenalty ? 'Yes' : 'No',
+                    s.distanceRemaining || '',
+                    `"${(s.notes || '').replace(/"/g, '""')}"`,
+                    new Date(s.timestamp).toLocaleString()
+                ].join(','))
+        ].join('\n');
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${roundName.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        UI.showToast('Data exported!', 'success');
+    }
+};
+
+// ============================================================================
+// GLOBAL APP OBJECT
+// ============================================================================
+window.app = {
+    shots: ShotManager,
+    holes: HoleManager,
+    rounds: RoundManager,
+    course: CourseManager,
+    stats: StatsManager,
+    scorecard: ScorecardManager,
+    export: ExportManager,
+    ui: UI
+};
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        console.log('🌏️ Initializing CaddieLog Pro...');
+        
+        // Initialize Firebase
+        await FirebaseSync.initialize();
+        
+        // Load state
+        State.load();
+        
+        // Initialize UI
+        UI.updateCurrentRoundDisplay();
+        UI.updateHoleDisplay();
+        UI.updateQuickStats();
+        ShotManager.display();
+        StatsManager.update();
+        
+        console.log('✅ CaddieLog Pro ready!');
+        
+        // Show course setup on first load
+        const hasSetupCourse = localStorage.getItem('hasSetupCourse');
+        if (!hasSetupCourse) {
+            setTimeout(() => {
+                if (confirm('Welcome to CaddieLog Pro! Would you like to set up your course details?')) {
+                    UI.showCourseModal();
+                }
+                localStorage.setItem('hasSetupCourse', 'true');
+            }, 1000);
+        }
+    } catch (error) {
+        ErrorHandler.handle(error, 'Failed to initialize app');
+    }
+});
+
+</script>
