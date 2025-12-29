@@ -76,27 +76,10 @@
             font-weight: 600;
         }
 
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .input-row-three {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        .input-row-four {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
+        .input-group { margin-bottom: 16px; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .input-row-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .input-row-four { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
         label { 
             display: block; 
@@ -106,10 +89,7 @@
             color: var(--text-dark);
         }
 
-        .label-required::after {
-            content: " *";
-            color: var(--danger);
-        }
+        .label-required::after { content: " *"; color: var(--danger); }
 
         input, select, textarea {
             width: 100%;
@@ -129,10 +109,7 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
-        input.error, select.error, textarea.error {
-            border-color: var(--danger);
-        }
-
+        input.error, select.error, textarea.error { border-color: var(--danger); }
         .error-message {
             color: var(--danger);
             font-size: 12px;
@@ -140,15 +117,9 @@
             display: none;
             font-weight: 500;
         }
+        .error-message.show { display: block; }
 
-        .error-message.show {
-            display: block;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 70px;
-        }
+        textarea { resize: vertical; min-height: 70px; }
 
         button {
             width: 100%;
@@ -170,58 +141,18 @@
             box-shadow: 0 4px 12px var(--shadow-hover);
         }
 
-        button:active { 
-            transform: translateY(0);
-        }
-        
-        button:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed;
-            transform: none;
-        }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 12px;
-        }
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+        .button-group-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
-        .button-group-three {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-        }
-
-        .secondary-btn { 
-            background: var(--secondary);
-            font-size: 14px; 
-            padding: 12px 16px;
-        }
-        
-        .secondary-btn:hover {
-            background: #2c3e50;
-        }
-        
-        .danger-btn { 
-            background: var(--danger);
-            font-size: 14px; 
-            padding: 12px 16px;
-        }
-        
-        .danger-btn:hover {
-            background: #c0392b;
-        }
-        
-        .warning-btn { 
-            background: var(--warning);
-            font-size: 14px; 
-            padding: 12px 16px;
-        }
-        
-        .warning-btn:hover {
-            background: #e67e22;
-        }
+        .secondary-btn { background: var(--secondary); font-size: 14px; padding: 12px 16px; }
+        .secondary-btn:hover { background: #2c3e50; }
+        .danger-btn { background: var(--danger); font-size: 14px; padding: 12px 16px; }
+        .danger-btn:hover { background: #c0392b; }
+        .warning-btn { background: var(--warning); font-size: 14px; padding: 12px 16px; }
+        .warning-btn:hover { background: #e67e22; }
 
         .toast {
             position: fixed;
@@ -260,12 +191,7 @@
             box-shadow: 0 2px 8px var(--shadow);
         }
 
-        th, td {
-            text-align: left;
-            padding: 12px 10px;
-            border-bottom: 1px solid var(--light-bg);
-        }
-
+        th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--light-bg); }
         th { 
             background: var(--primary);
             color: white; 
@@ -275,19 +201,10 @@
             letter-spacing: 0.5px;
         }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--light-bg); }
 
-        tr:hover td {
-            background: var(--light-bg);
-        }
-
-        .shot-actions {
-            display: flex;
-            gap: 6px;
-        }
-
+        .shot-actions { display: flex; gap: 6px; }
         .icon-btn {
             background: none;
             border: none;
@@ -298,15 +215,8 @@
             border-radius: 6px;
             width: auto;
         }
-
-        .icon-btn:hover {
-            background: var(--light-bg);
-            transform: scale(1.1);
-        }
-
-        .icon-btn:active { 
-            transform: scale(0.95);
-        }
+        .icon-btn:hover { background: var(--light-bg); transform: scale(1.1); }
+        .icon-btn:active { transform: scale(0.95); }
 
         .stats-grid {
             display: grid;
@@ -324,13 +234,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 4px;
-        }
-
+        .stat-value { font-size: 28px; font-weight: 700; color: white; margin-bottom: 4px; }
         .stat-label {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.9);
@@ -339,10 +243,7 @@
             letter-spacing: 0.5px;
         }
 
-        .club-stats {
-            margin-top: 16px;
-        }
-
+        .club-stats { margin-top: 16px; }
         .club-stat-item {
             display: flex;
             justify-content: space-between;
@@ -354,23 +255,10 @@
             border-left: 4px solid var(--accent);
             transition: all 0.2s ease;
         }
+        .club-stat-item:hover { transform: translateX(4px); box-shadow: 0 2px 8px var(--shadow); }
 
-        .club-stat-item:hover {
-            transform: translateX(4px);
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-
-        .round-selector {
-            margin-bottom: 20px;
-        }
-
-        .round-list, .course-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
+        .round-selector { margin-bottom: 20px; }
+        .round-list, .course-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
         .round-item, .course-item {
             padding: 14px 16px;
             background: var(--light-bg);
@@ -382,13 +270,11 @@
             align-items: center;
             border: 2px solid transparent;
         }
-
         .round-item:hover, .course-item:hover { 
             background: #d5dbdb;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px var(--shadow);
         }
-        
         .round-item.active, .course-item.active { 
             background: var(--accent);
             color: white;
@@ -409,12 +295,17 @@
             justify-content: center;
             animation: fadeIn 0.2s ease;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        
+        /* ADD THIS NEW RULE */
+        #authModal {
+            backdrop-filter: blur(8px);
+        }
+        
+        #authModal .modal-content {
+            animation: slideUp 0.4s ease;
         }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .modal.show { display: flex; }
 
         .modal-content {
@@ -447,14 +338,8 @@
             font-weight: 500;
             box-shadow: 0 4px 12px var(--shadow);
         }
-
-        .sync-status.syncing { 
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-        
-        .sync-status.offline { 
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
+        .sync-status.syncing { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .sync-status.offline { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
 
         .tabs {
             display: flex;
@@ -477,23 +362,11 @@
             white-space: nowrap;
             font-size: 14px;
         }
+        .tab:hover { color: var(--primary); }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-        .tab:hover {
-            color: var(--primary);
-        }
-
-        .tab.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .hole-card {
             background: var(--light-bg);
@@ -505,30 +378,14 @@
             transition: all 0.2s ease;
             box-shadow: 0 2px 8px var(--shadow);
         }
-
-        .hole-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px var(--shadow-hover);
-        }
-
+        .hole-card:hover { transform: translateX(4px); box-shadow: 0 4px 12px var(--shadow-hover); }
         .hole-card.birdie { border-left-color: var(--birdie); }
         .hole-card.par { border-left-color: var(--par); }
         .hole-card.bogey { border-left-color: var(--bogey); }
         .hole-card.double-bogey { border-left-color: var(--double-bogey); }
 
-        .hole-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .hole-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
+        .hole-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .hole-title { font-size: 17px; font-weight: 700; color: var(--primary); }
         .shot-count {
             background: var(--primary);
             color: white;
@@ -538,47 +395,16 @@
             font-weight: 700;
         }
 
-        .score-display {
-            display: flex;
-            gap: 12px;
-            font-size: 14px;
-            align-items: center;
-        }
-
-        .score-badge {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 13px;
-        }
-
+        .score-display { display: flex; gap: 12px; font-size: 14px; align-items: center; }
+        .score-badge { padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 13px; }
         .score-badge.birdie { background: var(--birdie); color: white; }
         .score-badge.par { background: var(--par); color: white; }
         .score-badge.bogey { background: var(--bogey); color: white; }
         .score-badge.double-bogey { background: var(--double-bogey); color: white; }
 
-        .hole-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 12px;
-            font-size: 12px;
-        }
-
-        .hole-stat {
-            text-align: center;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .hole-stat-value {
-            font-weight: 700;
-            font-size: 18px;
-            color: var(--primary);
-        }
-
+        .hole-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; font-size: 12px; }
+        .hole-stat { text-align: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid var(--border); }
+        .hole-stat-value { font-weight: 700; font-size: 18px; color: var(--primary); }
         .hole-stat-label {
             color: var(--text-light);
             font-size: 11px;
@@ -596,27 +422,10 @@
             border-radius: 8px;
             flex-wrap: wrap;
         }
+        .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin: 0; }
+        .checkbox-group label { margin: 0; font-weight: 500; cursor: pointer; }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            margin: 0;
-        }
-
-        .checkbox-group label {
-            margin: 0;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
+        .quick-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
         .quick-stat {
             text-align: center;
             padding: 14px;
@@ -624,13 +433,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
         }
-
-        .quick-stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: white;
-        }
-
+        .quick-stat-value { font-size: 24px; font-weight: 700; color: white; }
         .quick-stat-label {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.9);
@@ -640,10 +443,7 @@
             font-weight: 500;
         }
 
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
+        .loading { opacity: 0.6; pointer-events: none; }
 
         .course-info {
             background: var(--light-bg);
@@ -652,51 +452,15 @@
             margin-bottom: 16px;
             border: 1px solid var(--border);
         }
+        .course-info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .course-info-row:last-child { margin-bottom: 0; }
+        .course-info-label { color: var(--text-light); font-weight: 500; }
+        .course-info-value { font-weight: 700; color: var(--primary); }
 
-        .course-info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .course-info-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .course-info-label {
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        .course-info-value {
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .hole-input-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .hole-input-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hole-input-item label {
-            font-size: 11px;
-            margin-bottom: 4px;
-            color: var(--text-light);
-            font-weight: 600;
-        }
-
-        .hole-input-item input {
-            padding: 8px 10px;
-            font-size: 14px;
-        }
+        .hole-input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+        .hole-input-item { display: flex; flex-direction: column; }
+        .hole-input-item label { font-size: 11px; margin-bottom: 4px; color: var(--text-light); font-weight: 600; }
+        .hole-input-item input { padding: 8px 10px; font-size: 14px; }
 
         .course-preset-badge {
             display: inline-block;
@@ -709,18 +473,8 @@
             font-weight: 600;
         }
 
-        .course-item-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
+        .course-item-actions { display: flex; gap: 6px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .penalty-badge {
             background: var(--danger);
             color: white;
@@ -730,37 +484,15 @@
             font-weight: 700;
             margin-left: 4px;
         }
-
-        .oob-indicator {
-            color: var(--danger);
-            font-weight: 700;
-        }
+        .oob-indicator { color: var(--danger); font-weight: 700; }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 18px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .input-row, .button-group {
-                grid-template-columns: 1fr;
-            }
-
-            .quick-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .hole-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .container { padding: 18px; }
+            h1 { font-size: 24px; }
+            .input-row, .button-group { grid-template-columns: 1fr; }
+            .quick-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hole-stats { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -770,6 +502,36 @@
 <div class="sync-status" id="syncStatus">
     <span>🔄</span>
     <span id="syncStatusText">Connecting to cloud...</span>
+</div>
+
+<!-- Add this after the sync-status div, before the first container -->
+<div id="authModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3 id="authTitle">Sign In to CaddieLog Pro</h3>
+        
+        <div class="input-group">
+            <label class="label-required">Email</label>
+            <input type="email" id="authEmail" placeholder="your@email.com" autocomplete="email">
+            <div class="error-message" id="error-authEmail"></div>
+        </div>
+        
+        <div class="input-group">
+            <label class="label-required">Password</label>
+            <input type="password" id="authPassword" placeholder="Enter password" autocomplete="current-password">
+            <div class="error-message" id="error-authPassword"></div>
+        </div>
+        
+        <button onclick="app.auth.signIn()" id="authSubmitBtn">Sign In</button>
+        
+        <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+            <p style="color: var(--text-light); font-size: 14px; margin-bottom: 12px;">
+                <span id="authToggleText">Don't have an account?</span>
+            </p>
+            <button class="secondary-btn" onclick="app.auth.toggleMode()" id="authToggleBtn">Create Account</button>
+        </div>
+        
+        <div id="authError" style="display: none; margin-top: 16px; padding: 12px; background: var(--danger); color: white; border-radius: 8px; font-size: 14px;"></div>
+    </div>
 </div>
 
 <div class="container">
@@ -791,6 +553,13 @@
         </div>
     </div>
 
+    <!-- Add after the quick-stats div -->
+    <div style="text-align: center; margin-top: 12px;">
+    <button class="secondary-btn" onclick="app.auth.signOut()" style="font-size: 13px; padding: 8px 16px;">
+        🚪 Sign Out (<span id="userEmail">-</span>)
+    </button>
+    </div>
+
     <!-- Round Management -->
     <div class="round-selector">
         <div class="button-group">
@@ -803,7 +572,7 @@
     </div>
 
     <button class="secondary-btn" onclick="app.ui.showCoursePresetsModal()" style="margin-top: 12px; width: 100%;">
-        🏌️ Course Presets & Setup
+        🌏 Course Presets & Setup
     </button>
 
     <!-- Hole Navigation -->
@@ -1269,8 +1038,8 @@
 // FIREBASE SETUP
 // ============================================================================
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCbBX_K1r81fAnuhVhq2DLJyPX7QB_ON-w",
@@ -1296,6 +1065,25 @@ try {
 }
 
 // ============================================================================
+// PERSISTENT USER ID SYSTEM (CRITICAL FIX)
+// ============================================================================
+const UserManager = {
+    getPersistentUserId() {
+        let userId = localStorage.getItem('persistentUserId');
+        if (!userId) {
+            userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem('persistentUserId', userId);
+            console.log('🆔 Created new persistent user ID:', userId);
+        }
+        return userId;
+    },
+    
+    getFirebaseUid() {
+        return currentUser ? currentUser.uid : null;
+    }
+};
+
+// ============================================================================
 // ID GENERATION SYSTEM
 // ============================================================================
 const IDGenerator = {
@@ -1313,7 +1101,7 @@ const IDGenerator = {
 };
 
 // ============================================================================
-// CENTRALIZED STATE MANAGEMENT
+// CENTRALIZED STATE MANAGEMENT (IMPROVED)
 // ============================================================================
 const State = {
     rounds: [],
@@ -1330,6 +1118,7 @@ const State = {
     
     load() {
         try {
+            this.userId = UserManager.getPersistentUserId();
             this.rounds = JSON.parse(localStorage.getItem('golfRounds') || '[]');
             this.shots = JSON.parse(localStorage.getItem('golfShots') || '[]');
             this.coursePresets = JSON.parse(localStorage.getItem('golfCoursePresets') || '[]');
@@ -1345,7 +1134,8 @@ const State = {
                     tees: "White",
                     pars: this.defaultPars,
                     yards: this.defaultYards,
-                    completed: false
+                    completed: false,
+                    userId: this.userId
                 };
                 this.rounds.push(defaultRound);
                 this.currentRoundId = defaultRound.id;
@@ -1359,6 +1149,7 @@ const State = {
             this.currentHole = parseInt(localStorage.getItem(`currentHole_${this.currentRoundId}`) || '1');
             
             console.log('✅ State loaded:', {
+                userId: this.userId,
                 rounds: this.rounds.length,
                 shots: this.shots.length,
                 coursePresets: this.coursePresets.length,
@@ -1384,6 +1175,7 @@ const State = {
     },
     
     initializeDefaults() {
+        this.userId = UserManager.getPersistentUserId();
         const defaultRound = {
             id: IDGenerator.generateRoundId(),
             name: "Today's Round",
@@ -1393,7 +1185,8 @@ const State = {
             tees: "White",
             pars: this.defaultPars,
             yards: this.defaultYards,
-            completed: false
+            completed: false,
+            userId: this.userId
         };
         this.rounds = [defaultRound];
         this.shots = [];
@@ -1428,6 +1221,7 @@ const State = {
     },
     
     addRound(round) {
+        round.userId = this.userId;
         this.rounds.push(round);
         this.save();
     },
@@ -1475,6 +1269,7 @@ const State = {
     },
     
     addCoursePreset(course) {
+        course.userId = this.userId;
         this.coursePresets.push(course);
         this.save();
     },
@@ -1500,36 +1295,44 @@ const State = {
 };
 
 // ============================================================================
-// FIREBASE SYNC MANAGER
+// FIREBASE SYNC MANAGER (CRITICAL FIXES APPLIED)
 // ============================================================================
 const FirebaseSync = {
     pendingOperations: [],
     isSyncing: false,
+    unsubscribers: [],
     
     async initialize() {
-        if (!isFirebaseEnabled) return;
-        
-        try {
-            await signInAnonymously(auth);
-            console.log('✅ Anonymous authentication successful');
-            
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    State.userId = user.uid;
-                    currentUser = user;
-                    this.updateSyncStatus('synced', '✅ Connected to cloud');
-                    
-                    await this.loadUserData();
-                    await this.processPending();
-                } else {
-                    this.updateSyncStatus('offline', '⚠️ Offline mode');
-                }
-            });
-        } catch (error) {
-            console.error('Firebase sync error:', error);
-            this.updateSyncStatus('offline', '⚠️ Offline mode');
-        }
-    },
+    if (!isFirebaseEnabled) return;
+    
+    try {
+        // Check if user is already signed in
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                this.onUserSignedIn();
+            } else {
+                currentUser = null;
+                this.updateSyncStatus('offline', '⚠️ Not signed in');
+                UI.showAuthModal();
+            }
+        });
+    } catch (error) {
+        console.error('Firebase sync error:', error);
+        this.updateSyncStatus('offline', '⚠️ Offline mode');
+    }
+},
+
+async onUserSignedIn() {
+    console.log('✅ User authenticated:', currentUser.email);
+    this.updateSyncStatus('synced', '✅ Connected to cloud');
+    UI.hideAuthModal();
+    UI.updateUserEmail(currentUser.email);
+    
+    await this.loadUserData();
+    this.setupRealtimeListeners();
+    await this.processPending();
+},
     
     updateSyncStatus(status, text) {
         const statusEl = document.getElementById('syncStatus');
@@ -1541,36 +1344,44 @@ const FirebaseSync = {
     },
     
     async loadUserData() {
-        if (!currentUser) return;
+    if (!currentUser) return;
+    
+    try {
+        this.updateSyncStatus('syncing', '🔄 Loading your data...');
         
-        try {
-            this.updateSyncStatus('syncing', '🔄 Loading your data...');
+        const firebaseUid = currentUser.uid;
+        
+        // Load both datasets in parallel - query by firebaseUid instead of userId
+        const [roundsSnapshot, shotsSnapshot, coursesSnapshot] = await Promise.all([
+            getDocs(query(collection(db, 'rounds'), where('firebaseUid', '==', firebaseUid))),
+            getDocs(query(collection(db, 'shots'), where('firebaseUid', '==', firebaseUid))),
+            getDocs(query(collection(db, 'coursePresets'), where('firebaseUid', '==', firebaseUid)))
+        ]);
             
-            const roundsQuery = query(
-                collection(db, 'rounds'),
-                where('userId', '==', currentUser.uid)
-            );
-            const roundsSnapshot = await getDocs(roundsQuery);
             const firebaseRounds = roundsSnapshot.docs.map(doc => ({
                 firestoreId: doc.id,
                 ...doc.data()
             }));
             
-            const shotsQuery = query(
-                collection(db, 'shots'),
-                where('userId', '==', currentUser.uid)
-            );
-            const shotsSnapshot = await getDocs(shotsQuery);
             const firebaseShots = shotsSnapshot.docs.map(doc => ({
                 firestoreId: doc.id,
                 ...doc.data()
             }));
             
+            const firebaseCourses = coursesSnapshot.docs.map(doc => ({
+                firestoreId: doc.id,
+                ...doc.data()
+            }));
+            
+            // SMART MERGE: Prefer Firebase data but keep local-only items
             if (firebaseRounds.length > 0) {
-                State.rounds = firebaseRounds;
+                State.rounds = this.mergeData(State.rounds, firebaseRounds);
             }
             if (firebaseShots.length > 0) {
-                State.shots = firebaseShots;
+                State.shots = this.mergeData(State.shots, firebaseShots);
+            }
+            if (firebaseCourses.length > 0) {
+                State.coursePresets = this.mergeData(State.coursePresets, firebaseCourses);
             }
             
             State.save();
@@ -1580,10 +1391,88 @@ const FirebaseSync = {
             UI.updateHoleDisplay();
             UI.updateQuickStats();
             
+            console.log('✅ User data loaded and merged');
+            
         } catch (error) {
             console.error('Failed to load user data:', error);
-            this.updateSyncStatus('offline', '⚠️ Sync failed');
+            this.updateSyncStatus('offline', '⚠️ Sync failed - using local data');
         }
+    },
+    
+    // CRITICAL FIX: Merge strategy to prevent data loss
+    mergeData(localData, firebaseData) {
+        const merged = [...firebaseData];
+        const firebaseIds = new Set(firebaseData.map(item => item.id));
+        
+        // Add local items that don't exist in Firebase
+        localData.forEach(localItem => {
+            if (!firebaseIds.has(localItem.id) && !localItem.firestoreId) {
+                merged.push(localItem);
+            }
+        });
+        
+        return merged;
+    },
+    
+    // CRITICAL FIX: Setup realtime listeners with proper cleanup
+    setupRealtimeListeners() {
+    if (!currentUser) return;
+    
+    const firebaseUid = currentUser.uid;
+    
+    // Listen for round changes
+    const roundsUnsubscribe = onSnapshot(
+        query(collection(db, 'rounds'), where('firebaseUid', '==', firebaseUid)),
+        (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    const data = { firestoreId: change.doc.id, ...change.doc.data() };
+                    
+                    if (change.type === 'added' || change.type === 'modified') {
+                        const index = State.rounds.findIndex(r => r.id === data.id);
+                        if (index !== -1) {
+                            State.rounds[index] = data;
+                        } else if (change.type === 'added') {
+                            State.rounds.push(data);
+                        }
+                        State.save();
+                        UI.updateCurrentRoundDisplay();
+                    } else if (change.type === 'removed') {
+                        State.rounds = State.rounds.filter(r => r.id !== data.id);
+                        State.save();
+                    }
+                });
+            },
+            (error) => console.error('Realtime listener error:', error)
+        );
+        
+        // Listen for shot changes
+    const shotsUnsubscribe = onSnapshot(
+        query(collection(db, 'shots'), where('firebaseUid', '==', firebaseUid)),
+        (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    const data = { firestoreId: change.doc.id, ...change.doc.data() };
+                    
+                    if (change.type === 'added' || change.type === 'modified') {
+                        const index = State.shots.findIndex(s => s.id === data.id);
+                        if (index !== -1) {
+                            State.shots[index] = data;
+                        } else if (change.type === 'added') {
+                            State.shots.push(data);
+                        }
+                        State.save();
+                        if (data.hole === State.currentHole && data.roundId === State.currentRoundId) {
+                            ShotManager.display();
+                            UI.updateHoleDisplay();
+                        }
+                    } else if (change.type === 'removed') {
+                        State.shots = State.shots.filter(s => s.id !== data.id);
+                        State.save();
+                    }
+                });
+            }
+        );
+        
+        this.unsubscribers.push(roundsUnsubscribe, shotsUnsubscribe);
     },
     
     async syncRound(round) {
@@ -1595,7 +1484,8 @@ const FirebaseSync = {
         try {
             const roundData = {
                 ...round,
-                userId: currentUser.uid
+                userId: UserManager.getPersistentUserId(),
+                firebaseUid: currentUser.uid
             };
             
             if (round.firestoreId) {
@@ -1603,9 +1493,16 @@ const FirebaseSync = {
             } else {
                 const docRef = await addDoc(collection(db, 'rounds'), roundData);
                 round.firestoreId = docRef.id;
+                
+                // Update local state with Firestore ID
+                const index = State.rounds.findIndex(r => r.id === round.id);
+                if (index !== -1) {
+                    State.rounds[index].firestoreId = docRef.id;
+                    State.save();
+                }
             }
             
-            this.updateSyncStatus('synced', '✅ Round saved to cloud');
+            console.log('✅ Round synced to Firebase');
         } catch (error) {
             console.error('Failed to sync round:', error);
             this.queueOperation({ type: 'round', data: round });
@@ -1621,7 +1518,8 @@ const FirebaseSync = {
         try {
             const shotData = {
                 ...shot,
-                userId: currentUser.uid
+                userId: UserManager.getPersistentUserId(),
+                firebaseUid: currentUser.uid
             };
             
             if (shot.firestoreId) {
@@ -1629,12 +1527,51 @@ const FirebaseSync = {
             } else {
                 const docRef = await addDoc(collection(db, 'shots'), shotData);
                 shot.firestoreId = docRef.id;
+                
+                // Update local state with Firestore ID
+                const index = State.shots.findIndex(s => s.id === shot.id);
+                if (index !== -1) {
+                    State.shots[index].firestoreId = docRef.id;
+                    State.save();
+                }
             }
-            
-            this.updateSyncStatus('synced', '✅ Synced');
         } catch (error) {
             console.error('Failed to sync shot:', error);
             this.queueOperation({ type: 'shot', data: shot });
+        }
+    },
+    
+    // IMPORTANT FIX: Add course preset sync
+    async syncCoursePreset(course) {
+        if (!currentUser) {
+            this.queueOperation({ type: 'course', data: course });
+            return;
+        }
+        
+        try {
+            const courseData = {
+                ...course,
+                userId: UserManager.getPersistentUserId(),
+                firebaseUid: currentUser.uid
+            };
+            
+            if (course.firestoreId) {
+                await updateDoc(doc(db, 'coursePresets', course.firestoreId), courseData);
+            } else {
+                const docRef = await addDoc(collection(db, 'coursePresets'), courseData);
+                course.firestoreId = docRef.id;
+                
+                const index = State.coursePresets.findIndex(c => c.id === course.id);
+                if (index !== -1) {
+                    State.coursePresets[index].firestoreId = docRef.id;
+                    State.save();
+                }
+            }
+            
+            console.log('✅ Course preset synced to Firebase');
+        } catch (error) {
+            console.error('Failed to sync course preset:', error);
+            this.queueOperation({ type: 'course', data: course });
         }
     },
     
@@ -1664,9 +1601,30 @@ const FirebaseSync = {
         }
     },
     
+    async deleteCoursePresetFromFirebase(courseId) {
+        if (!currentUser) return;
+        
+        const course = State.coursePresets.find(c => c.id === courseId);
+        if (course && course.firestoreId) {
+            try {
+                await deleteDoc(doc(db, 'coursePresets', course.firestoreId));
+            } catch (error) {
+                console.error('Failed to delete course preset from Firebase:', error);
+            }
+        }
+    },
+    
+    // IMPORTANT FIX: Improved queue with retry logic
     queueOperation(operation) {
-        this.pendingOperations.push(operation);
-        localStorage.setItem('pendingSync', JSON.stringify(this.pendingOperations));
+        const op = {
+            ...operation,
+            id: IDGenerator.generateShotId(),
+            timestamp: Date.now(),
+            retryCount: 0
+        };
+        
+        this.pendingOperations.push(op);
+        this.savePendingQueue();
         this.updateSyncStatus('offline', `⚠️ ${this.pendingOperations.length} pending`);
     },
     
@@ -1674,7 +1632,15 @@ const FirebaseSync = {
         if (this.isSyncing || !currentUser) return;
         
         this.isSyncing = true;
-        const pending = JSON.parse(localStorage.getItem('pendingSync') || '[]');
+        const savedQueue = JSON.parse(localStorage.getItem('pendingSync') || '[]');
+        this.pendingOperations = savedQueue;
+        
+        if (this.pendingOperations.length === 0) {
+            this.isSyncing = false;
+            return;
+        }
+        
+        const pending = [...this.pendingOperations];
         
         for (const op of pending) {
             try {
@@ -1682,27 +1648,70 @@ const FirebaseSync = {
                     await this.syncRound(op.data);
                 } else if (op.type === 'shot') {
                     await this.syncShot(op.data);
+                } else if (op.type === 'course') {
+                    await this.syncCoursePreset(op.data);
                 }
+                
+                // Remove from queue on success
+                this.pendingOperations = this.pendingOperations.filter(o => o.id !== op.id);
+                this.savePendingQueue();
+                
             } catch (error) {
                 console.error('Failed to process pending operation:', error);
-                break;
+                
+                // Implement retry with exponential backoff
+                op.retryCount = (op.retryCount || 0) + 1;
+                if (op.retryCount >= 5) {
+                    console.error('Max retries reached for operation:', op);
+                    this.pendingOperations = this.pendingOperations.filter(o => o.id !== op.id);
+                    this.savePendingQueue();
+                } else {
+                    break; // Stop processing, will retry later
+                }
             }
         }
         
-        localStorage.setItem('pendingSync', JSON.stringify([]));
-        this.pendingOperations = [];
+        this.savePendingQueue();
         this.isSyncing = false;
-        this.updateSyncStatus('synced', '✅ All synced');
+        
+        if (this.pendingOperations.length === 0) {
+            this.updateSyncStatus('synced', '✅ All synced');
+        } else {
+            this.updateSyncStatus('offline', `⚠️ ${this.pendingOperations.length} pending`);
+        }
+    },
+    
+    savePendingQueue() {
+        localStorage.setItem('pendingSync', JSON.stringify(this.pendingOperations));
+    },
+    
+    // IMPORTANT FIX: Cleanup listeners to prevent memory leaks
+    cleanup() {
+        this.unsubscribers.forEach(unsub => {
+            try {
+                unsub();
+            } catch (error) {
+                console.error('Error unsubscribing:', error);
+            }
+        });
+        this.unsubscribers = [];
+        console.log('✅ Firebase listeners cleaned up');
     }
 };
 
+// Setup event listeners for online/offline
 window.addEventListener('online', () => {
     FirebaseSync.updateSyncStatus('syncing', '🔄 Reconnecting...');
-    FirebaseSync.processPending();
+    setTimeout(() => FirebaseSync.processPending(), 1000);
 });
 
 window.addEventListener('offline', () => {
     FirebaseSync.updateSyncStatus('offline', '⚠️ Offline mode');
+});
+
+// IMPORTANT FIX: Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    FirebaseSync.cleanup();
 });
 
 // ============================================================================
@@ -1730,14 +1739,6 @@ const Validator = {
         
         if (!shot.club || shot.club === '') {
             errors.club = 'Please select a club';
-        }
-        
-        if (!shot.result) {
-            errors.result = 'Shot result is required';
-        }
-        
-        if (!shot.lie) {
-            errors.lie = 'Lie type is required';
         }
         
         return {
@@ -1832,6 +1833,22 @@ const UI = {
         setTimeout(() => toast.remove(), 3000);
     },
     
+    showAuthModal() {
+        document.getElementById('authModal').style.display = 'flex';
+    },
+    
+    hideAuthModal() {
+        document.getElementById('authModal').style.display = 'none';
+        AuthManager.clearAuthErrors();
+    },
+    
+    updateUserEmail(email) {
+        const emailEl = document.getElementById('userEmail');
+        if (emailEl) {
+            emailEl.textContent = email || '-';
+        }
+    },
+
     showRoundModal() {
         RoundManager.renderRoundList();
         document.getElementById('roundModal').classList.add('show');
@@ -1957,7 +1974,6 @@ const UI = {
     
     updateQuickStats() {
         const shots = State.getShotsForRound(State.currentRoundId);
-        const round = State.getCurrentRound();
         
         if (shots.length === 0) {
             document.getElementById('quickScore').textContent = '-';
@@ -1997,7 +2013,7 @@ const UI = {
 };
 
 // ============================================================================
-// SHOT MANAGER - WITH OUT OF BOUNDS HANDLING
+// SHOT MANAGER - IMPROVED WITH SHOT NUMBER RECALCULATION
 // ============================================================================
 const ShotManager = {
     async add() {
@@ -2167,12 +2183,35 @@ const ShotManager = {
         );
     },
     
+    // IMPORTANT FIX: Recalculate shot numbers after deletion
     async delete(shotId) {
         if (!confirm('Delete this shot?')) return;
         
         await ErrorHandler.wrap(async () => {
+            const shot = State.getShotById(shotId);
+            const hole = shot.hole;
+            const roundId = shot.roundId;
+            
             await FirebaseSync.deleteShotFromFirebase(shotId);
             State.deleteShot(shotId);
+            
+            // CRITICAL FIX: Recalculate shot numbers for remaining shots
+            const remainingShots = State.getShotsForHole(roundId, hole)
+                .sort((a, b) => a.shotNumber - b.shotNumber);
+            
+            let needsUpdate = false;
+            remainingShots.forEach((s, index) => {
+                const newShotNumber = index + 1;
+                if (s.shotNumber !== newShotNumber) {
+                    State.updateShot(s.id, { shotNumber: newShotNumber });
+                    FirebaseSync.syncShot(State.getShotById(s.id));
+                    needsUpdate = true;
+                }
+            });
+            
+            if (needsUpdate) {
+                console.log('✅ Shot numbers recalculated');
+            }
             
             UI.updateHoleDisplay();
             UI.updateQuickStats();
@@ -2294,7 +2333,8 @@ const RoundManager = {
                 tees: "White",
                 pars: State.defaultPars,
                 yards: State.defaultYards,
-                completed: false
+                completed: false,
+                userId: UserManager.getPersistentUserId()
             };
             
             State.addRound(round);
@@ -2379,6 +2419,12 @@ const RoundManager = {
         if (!confirm(`Delete "${round.name}" and all ${shotCount} shots?`)) return;
         
         await ErrorHandler.wrap(async () => {
+            // Delete associated shots from Firebase
+            const shots = State.getShotsForRound(roundId);
+            for (const shot of shots) {
+                await FirebaseSync.deleteShotFromFirebase(shot.id);
+            }
+            
             await FirebaseSync.deleteRoundFromFirebase(roundId);
             State.deleteRound(roundId);
             
@@ -2420,7 +2466,7 @@ const RoundManager = {
 };
 
 // ============================================================================
-// COURSE PRESET MANAGER
+// COURSE PRESET MANAGER - WITH FIREBASE SYNC
 // ============================================================================
 const CoursePresetManager = {
     showCreateModal() {
@@ -2462,14 +2508,17 @@ const CoursePresetManager = {
                     yards: yards,
                     totalPar: pars.reduce((a, b) => a + b, 0),
                     totalYards: yards.reduce((a, b) => a + b, 0),
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    userId: UserManager.getPersistentUserId()
                 };
                 
                 if (State.editingCourse) {
                     State.updateCoursePreset(State.editingCourse, course);
+                    await FirebaseSync.syncCoursePreset(State.getCoursePresetById(State.editingCourse));
                     UI.showToast('Course updated!', 'success');
                 } else {
                     State.addCoursePreset(course);
+                    await FirebaseSync.syncCoursePreset(course);
                     UI.showToast('Course preset saved!', 'success');
                 }
                 
@@ -2504,6 +2553,7 @@ const CoursePresetManager = {
         const course = State.getCoursePresetById(courseId);
         if (!confirm(`Delete "${course.name}"?`)) return;
         
+        await FirebaseSync.deleteCoursePresetFromFirebase(courseId);
         State.deleteCoursePreset(courseId);
         this.renderList();
         UI.showToast('Course deleted!', 'success');
@@ -2655,7 +2705,6 @@ for (let i = 1; i <= 18; i++) {
 const StatsManager = {
     update() {
         const shots = State.getShotsForRound(State.currentRoundId);
-        const round = State.getCurrentRound();
         
         if (shots.length === 0) {
             document.getElementById('statsGrid').innerHTML = 
@@ -2935,6 +2984,147 @@ const ExportManager = {
 };
 
 // ============================================================================
+// AUTHENTICATION MANAGER
+// ============================================================================
+const AuthManager = {
+    isRegisterMode: false,
+    
+    toggleMode() {
+        this.isRegisterMode = !this.isRegisterMode;
+        
+        if (this.isRegisterMode) {
+            document.getElementById('authTitle').textContent = 'Create Account';
+            document.getElementById('authSubmitBtn').textContent = 'Create Account';
+            document.getElementById('authToggleText').textContent = 'Already have an account?';
+            document.getElementById('authToggleBtn').textContent = 'Sign In';
+            document.getElementById('authPassword').setAttribute('autocomplete', 'new-password');
+        } else {
+            document.getElementById('authTitle').textContent = 'Sign In to CaddieLog Pro';
+            document.getElementById('authSubmitBtn').textContent = 'Sign In';
+            document.getElementById('authToggleText').textContent = "Don't have an account?";
+            document.getElementById('authToggleBtn').textContent = 'Create Account';
+            document.getElementById('authPassword').setAttribute('autocomplete', 'current-password');
+        }
+        
+        this.clearAuthErrors();
+    },
+    
+    async signIn() {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        
+        this.clearAuthErrors();
+        
+        if (!email) {
+            this.showAuthError('email', 'Email is required');
+            return;
+        }
+        
+        if (!password) {
+            this.showAuthError('password', 'Password is required');
+            return;
+        }
+        
+        if (password.length < 6) {
+            this.showAuthError('password', 'Password must be at least 6 characters');
+            return;
+        }
+        
+        try {
+            document.getElementById('authSubmitBtn').disabled = true;
+            document.getElementById('authSubmitBtn').textContent = 'Please wait...';
+            
+            if (this.isRegisterMode) {
+                await createUserWithEmailAndPassword(auth, email, password);
+                UI.showToast('Account created successfully!', 'success');
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+                UI.showToast('Signed in successfully!', 'success');
+            }
+            
+            // Auth state change will trigger FirebaseSync.onUserSignedIn()
+            
+        } catch (error) {
+            console.error('Auth error:', error);
+            
+            let errorMessage = 'Authentication failed';
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = 'Email already in use';
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = 'Invalid email address';
+            } else if (error.code === 'auth/user-not-found') {
+                errorMessage = 'No account found with this email';
+            } else if (error.code === 'auth/wrong-password') {
+                errorMessage = 'Incorrect password';
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = 'Password is too weak';
+            } else if (error.code === 'auth/invalid-credential') {
+                errorMessage = 'Invalid email or password';
+            }
+            
+            this.showAuthError('general', errorMessage);
+            
+        } finally {
+            document.getElementById('authSubmitBtn').disabled = false;
+            document.getElementById('authSubmitBtn').textContent = 
+                this.isRegisterMode ? 'Create Account' : 'Sign In';
+        }
+    },
+    
+    async signOut() {
+        if (!confirm('Sign out? Your data will remain synced in the cloud.')) {
+            return;
+        }
+        
+        try {
+            FirebaseSync.cleanup();
+            await signOut(auth);
+            
+            // Clear current user
+            currentUser = null;
+            
+            // Show auth modal
+            UI.showAuthModal();
+            UI.updateSyncStatus('offline', '⚠️ Not signed in');
+            
+            UI.showToast('Signed out successfully', 'success');
+            
+        } catch (error) {
+            console.error('Sign out error:', error);
+            UI.showToast('Failed to sign out', 'error');
+        }
+    },
+    
+    showAuthError(field, message) {
+        if (field === 'general') {
+            const errorDiv = document.getElementById('authError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        } else {
+            const errorElement = document.getElementById(`error-auth${field.charAt(0).toUpperCase() + field.slice(1)}`);
+            const inputElement = document.getElementById(`auth${field.charAt(0).toUpperCase() + field.slice(1)}`);
+            
+            if (errorElement && inputElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+                inputElement.classList.add('error');
+            }
+        }
+    },
+    
+    clearAuthErrors() {
+        document.getElementById('authError').style.display = 'none';
+        document.querySelectorAll('#authModal .error-message').forEach(el => {
+            el.classList.remove('show');
+            el.textContent = '';
+        });
+        document.querySelectorAll('#authModal input').forEach(el => {
+            el.classList.remove('error');
+        });
+    }
+};
+
+// ============================================================================
 // GLOBAL APP OBJECT
 // ============================================================================
 window.app = {
@@ -2945,6 +3135,7 @@ window.app = {
     stats: StatsManager,
     scorecard: ScorecardManager,
     export: ExportManager,
+    auth: AuthManager,  // ADD THIS LINE
     ui: UI
 };
 
@@ -2953,12 +3144,16 @@ window.app = {
 // ============================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        console.log('🏌️ Initializing CaddieLog Pro...');
+        console.log('🌏 Initializing CaddieLog Pro...');
+        console.log('🔧 Version: 2.0 - With Critical Fixes');
         
+        // Initialize Firebase sync system
         await FirebaseSync.initialize();
         
+        // Load local state
         State.load();
         
+        // Update UI
         UI.updateCurrentRoundDisplay();
         UI.updateHoleDisplay();
         UI.updateQuickStats();
@@ -2966,7 +3161,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         StatsManager.update();
         
         console.log('✅ CaddieLog Pro ready!');
+        console.log('📊 User ID:', UserManager.getPersistentUserId());
         
+        // First time setup prompt
         const hasSetupCourse = localStorage.getItem('hasSetupCourse');
         if (!hasSetupCourse) {
             setTimeout(() => {

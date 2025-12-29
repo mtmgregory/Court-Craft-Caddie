@@ -8,58 +8,130 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Helper function to check if user owns the resource
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+    // Helper function to check if user owns the resource (for reads)
+    function isOwnerRead(resourceFirebaseUid) {
+      return isSignedIn() && request.auth.uid == resourceFirebaseUid;
+    }
+    
+    // Helper function to check if user owns the resource (for writes)
+    function isOwnerWrite() {
+      return isSignedIn() && 
+             request.resource.data.firebaseUid == request.auth.uid;
+    }
+    
+    // Helper to validate that userId is set correctly
+    function isValidUserId() {
+      return request.resource.data.userId is string &&
+             request.resource.data.userId.size() > 0;
     }
     
     // Rounds collection - users can only access their own rounds
     match /rounds/{roundId} {
-      allow read: if isOwner(resource.data.userId);
+      // Users can read their own rounds based on firebaseUid
+      allow read: if isOwnerRead(resource.data.firebaseUid);
+      
+      // Users can create rounds with proper validation
       allow create: if isSignedIn() 
-                    && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.keys().hasAll(['id', 'name', 'date', 'userId'])
+                    && isValidUserId()
+                    && isOwnerWrite()
+                    && request.resource.data.keys().hasAll(['id', 'name', 'date', 'userId', 'firebaseUid'])
                     && request.resource.data.name is string
                     && request.resource.data.name.size() > 0
-                    && request.resource.data.name.size() <= 100;
-      allow update: if isOwner(resource.data.userId)
+                    && request.resource.data.name.size() <= 100
+                    && request.resource.data.date is string
+                    && request.resource.data.courseName is string
+                    && request.resource.data.pars is list
+                    && request.resource.data.pars.size() == 18
+                    && request.resource.data.completed is bool;
+      
+      // Users can update their own rounds
+      allow update: if isOwnerRead(resource.data.firebaseUid)
+                    && isOwnerWrite()
                     && request.resource.data.userId == resource.data.userId
                     && request.resource.data.id == resource.data.id;
-      allow delete: if isOwner(resource.data.userId);
+      
+      // Users can delete their own rounds
+      allow delete: if isOwnerRead(resource.data.firebaseUid);
     }
     
     // Shots collection - users can only access their own shots
     match /shots/{shotId} {
-      allow read: if isSignedIn() 
-                  && exists(/databases/$(database)/documents/rounds/$(resource.data.roundId))
-                  && get(/databases/$(database)/documents/rounds/$(resource.data.roundId)).data.userId == request.auth.uid;
+      // Users can read their own shots based on firebaseUid
+      allow read: if isOwnerRead(resource.data.firebaseUid);
       
+      // Users can create shots with proper validation
       allow create: if isSignedIn()
-                    && exists(/databases/$(database)/documents/rounds/$(request.resource.data.roundId))
-                    && get(/databases/$(database)/documents/rounds/$(request.resource.data.roundId)).data.userId == request.auth.uid
-                    && request.resource.data.keys().hasAll(['id', 'roundId', 'hole', 'club', 'distance', 'result', 'lie', 'timestamp'])
+                    && isValidUserId()
+                    && isOwnerWrite()
+                    && request.resource.data.keys().hasAll([
+                      'id', 'roundId', 'hole', 'club', 'distance', 
+                      'result', 'lie', 'timestamp', 'shotNumber', 'firebaseUid'
+                    ])
+                    && request.resource.data.hole is int
                     && request.resource.data.hole >= 1 
                     && request.resource.data.hole <= 18
+                    && request.resource.data.distance is int
                     && request.resource.data.distance >= 0 
                     && request.resource.data.distance <= 600
                     && request.resource.data.club is string
-                    && request.resource.data.club.size() > 0;
+                    && request.resource.data.club.size() > 0
+                    && request.resource.data.club.size() <= 50
+                    && request.resource.data.shotNumber is int
+                    && request.resource.data.shotNumber > 0
+                    && request.resource.data.isPutt is bool
+                    && request.resource.data.isPenalty is bool;
       
-      allow update: if isSignedIn()
-                    && exists(/databases/$(database)/documents/rounds/$(resource.data.roundId))
-                    && get(/databases/$(database)/documents/rounds/$(resource.data.roundId)).data.userId == request.auth.uid
+      // Users can update their own shots
+      allow update: if isOwnerRead(resource.data.firebaseUid)
+                    && isOwnerWrite()
                     && request.resource.data.roundId == resource.data.roundId
-                    && request.resource.data.id == resource.data.id;
+                    && request.resource.data.id == resource.data.id
+                    && request.resource.data.userId == resource.data.userId;
       
-      allow delete: if isSignedIn()
-                    && exists(/databases/$(database)/documents/rounds/$(resource.data.roundId))
-                    && get(/databases/$(database)/documents/rounds/$(resource.data.roundId)).data.userId == request.auth.uid;
+      // Users can delete their own shots
+      allow delete: if isOwnerRead(resource.data.firebaseUid);
+    }
+    
+    // Course Presets collection
+    match /coursePresets/{courseId} {
+      // Users can read their own course presets based on firebaseUid
+      allow read: if isOwnerRead(resource.data.firebaseUid);
+      
+      // Users can create course presets with proper validation
+      allow create: if isSignedIn()
+                    && isValidUserId()
+                    && isOwnerWrite()
+                    && request.resource.data.keys().hasAll([
+                      'id', 'name', 'pars', 'yards', 'totalPar', 
+                      'totalYards', 'createdAt', 'userId', 'firebaseUid'
+                    ])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 100
+                    && request.resource.data.pars is list
+                    && request.resource.data.pars.size() == 18
+                    && request.resource.data.yards is list
+                    && request.resource.data.yards.size() == 18
+                    && request.resource.data.totalPar is int
+                    && request.resource.data.totalPar >= 54
+                    && request.resource.data.totalPar <= 108
+                    && request.resource.data.totalYards is int
+                    && request.resource.data.totalYards >= 0;
+      
+      // Users can update their own course presets
+      allow update: if isOwnerRead(resource.data.firebaseUid)
+                    && isOwnerWrite()
+                    && request.resource.data.id == resource.data.id
+                    && request.resource.data.userId == resource.data.userId;
+      
+      // Users can delete their own course presets
+      allow delete: if isOwnerRead(resource.data.firebaseUid);
     }
     
     // User preferences (optional - for storing user settings)
     match /users/{userId} {
-      allow read: if isOwner(userId);
-      allow write: if isOwner(userId);
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if isSignedIn() && request.auth.uid == userId;
     }
   }
 }
